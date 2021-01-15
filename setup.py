@@ -31,7 +31,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name='UnetVisualized',  # Required
+    name='EmailClassification',  # Required
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
@@ -44,7 +44,7 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description='Image annotation library for training and then visualizing model Input/Output',  # Optional
+    description='Email caching, segmentation, and classification tools',  # Optional
 
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
@@ -148,6 +148,7 @@ setup(
         "numpy",
         "numba",
         "doit",
+        "nltk",
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
@@ -183,14 +184,14 @@ setup(
     #
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
-    entry_points={  # Optional
-        'console_scripts': [
-            "email_classifier=src.__main__:main",
-            # 'unet=UnetVisualized.unet_source.__main__:main',
-            # 'unet_train=UnetVisualized.unet_source.__main__:main',
-            # "unet_visualize=UnetVisualized.presentation_tools.__main__:main"
-        ],
-    },
+    # entry_points={  # Optional
+    #     'console_scripts': [
+    #         "email_classifier=src.__main__:main",
+    #         # 'unet=UnetVisualized.unet_source.__main__:main',
+    #         # 'unet_train=UnetVisualized.unet_source.__main__:main',
+    #         # "unet_visualize=UnetVisualized.presentation_tools.__main__:main"
+    #     ],
+    # },
 
     # List additional URLs that are relevant to your project as a dict.
     #
@@ -202,8 +203,8 @@ setup(
     # maintainers, and where to support the project financially. The key is
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
-        'Bug Reports': 'https://github.com/RyanCPeters/UnetVisualized/issues',
-        'Source': 'https://github.com/RyanCPeters/UnetVisualized',
+        'Bug Reports': 'https://github.com/RyanCPeters/EmailClassification/issues',
+        'Source': 'https://github.com/RyanCPeters/EmailClassification',
     },
 )
 
