@@ -1,0 +1,42 @@
+# Ignoring all the auto-generated IDE crap files
+idea/*
+*\.idea
+
+# project specific elements that should be independently created on each machine
+debugging_output/
+convex_hull_*.png
+training_output/
+*summary_log.txt
+DemoPrograms/
+*[Oo]bservations*.txt
+*TimeClock*.*
+*.hdf5
+target_history.json
+unet\.ini
+**/test/test_db_folder/*
+*.html
+**/cache_files/
+**/sample_inputs/
+**/notes*
+**/informal_presentation*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+.doit*
+
+
+# Distribution / packaging
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
