@@ -4,6 +4,14 @@ from src.keyword_extraction.extraction_functions import message_roots_cache_dir,
 from src.keyword_extraction.extraction_functions import output_target_files
 from src import cache_folder
 import gc, pickle
+from src.__main__ import main
+
+extraction_targets = []
+
+def load_analysis_tools_helper(*args):
+    print(f"load_analysis_tools_helper({args=})")
+
+    return args
 
 
 def depickle(fd):
@@ -30,6 +38,7 @@ def task_extract_root_message():
 
 
 def task_extract_keywords():
+    global extraction_targets
     actions = [extract_keywords]
     cached_emails_map_path = cache_folder.joinpath(message_roots_cache_dir[0]).joinpath(message_roots_map_fname)
     with open(cached_emails_map_path,"rb") as f:
@@ -37,7 +46,16 @@ def task_extract_keywords():
     file_dep = [str(cached_emails_map_path)]
     [file_dep.append(str(v)) for v in extracted_roots_map.values()]
     targets = [str(cache_folder.joinpath(output_target_files.keywords))]
+    extraction_targets = targets[:]
     return dict(actions=actions,file_dep=file_dep,targets=targets,verbosity=2)
+
+
+def task_load_analysis_tools():
+    return dict(actions=load_analysis_tools_helper , targets=["load_analysis_tools_dummy_file.txt"])
+
+
+def task_categorize_emails():
+    return dict(actions=lambda *args:args, file_dep=["load_analysis_tools_dummy_file.txt"], targets=["categorize_emails_dummy_file.txt"])
 
 
 def emulate_doit(doit_d:dict):
@@ -48,11 +66,13 @@ def emulate_doit(doit_d:dict):
 
 
 if __name__ == '__main__':
-    # import os
-    # os.system("doit")
-    tasks = []
-    # tasks.append(task_download_emails)
-    # tasks.append(task_extract_root_message)
-    tasks.append(task_extract_keywords)
-    for task in tasks:
-        emulate_doit(task())
+    do_doit = False
+    if do_doit:
+        main()
+    else:
+        tasks = []
+        # tasks.append(task_download_emails)
+        # tasks.append(task_extract_root_message)
+        tasks.append(task_extract_keywords)
+        for task in tasks:
+            emulate_doit(task())

@@ -201,6 +201,7 @@ def extract_keywords(targets:list, file_dep:list)->tuple:
     keyword_extraction_path = Path(targets[0])
     keyword_extraction_path.mkdir(parents=True,exist_ok=True)
     message_bodies = [[],[],[]]
+    no_dupes = set()
     for path in file_dep[1:]:
         with open(path,"rb") as f:
             s = un_pickle(f)
@@ -209,6 +210,9 @@ def extract_keywords(targets:list, file_dep:list)->tuple:
             for i in range(len(tokenized)-1,0,-1):
                 if tokenized[i] in ("'m","'re"):
                     tokenized[i-1] += tokenized.pop(i)
+                    if tokenized[i].lower() == "helium" and path not in no_dupes:
+                        print(path)
+                        no_dupes.add(path)
             widest = max((len(w) for w in tokenized))
             if widest>30:
                 continue
