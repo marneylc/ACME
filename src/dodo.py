@@ -1,4 +1,4 @@
-from src.email_caching.downloader import email_downloader
+from src.email_caching.downloader import doit_email_downloader
 from src.keyword_extraction.extraction_functions import extract_root_messages,extract_keywords
 from src.keyword_extraction.extraction_functions import message_roots_cache_dir, message_roots_map_fname
 from src.keyword_extraction.extraction_functions import output_target_files
@@ -23,7 +23,7 @@ def depickle(fd):
 
 
 def task_download_emails():
-    actions = [email_downloader]
+    actions = [doit_email_downloader]
     targets = [str(cache_folder.joinpath("cached_emails.pkl"))]
     return dict(actions=actions,targets=targets,verbosity=2)
 
@@ -71,8 +71,9 @@ if __name__ == '__main__':
         main()
     else:
         tasks = []
-        # tasks.append(task_download_emails)
+        tasks.append(task_download_emails)
         # tasks.append(task_extract_root_message)
-        tasks.append(task_extract_keywords)
+        # tasks.append(task_extract_keywords)
+
         for task in tasks:
             emulate_doit(task())
