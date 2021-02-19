@@ -11,7 +11,7 @@ Isolated downloader demonstration steps:
 2. launch the resulting conda terminal (In windows this is a specific powershell/cmd terminal, this may vary on \*nix systems)
 3. clone this repository to your local machine, then cd into that cloned directory.
    * the contents should look something like:
-   ```
+```
 |- EmailClassification
 	|- Presentation_resources
 		|- ignorable stuffs for now
@@ -22,7 +22,7 @@ Isolated downloader demonstration steps:
 	|- environment.yml     			# this environment file is for full classification pipeline
 	|- README.md
 	|- setup.py
-   ```
+```
 4. use conda to set up and activate your virtual environment.
    * ` conda env create -f ./downloader_environment.yml`
    * `conda activate email_downlaoder_env`
@@ -41,9 +41,9 @@ Isolated downloader demonstration steps:
       * we pass `.` to say that the `setup.py` file is located in the current working directory.
    * This will result in the creation of console entry-points to the program for easy command line interactions.
    * output should look something like this:
-	```
+```
 	Obtaining file:///D:/GitHub_Remotes/shcool/EmailClassification
 	Installing collected packages: EmailClassification
 	  Running setup.py develop for EmailClassification
 	Successfully installed EmailClassification
-	```
+```
