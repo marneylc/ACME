@@ -31,9 +31,10 @@ def task_download_emails():
 def task_extract_root_message():
     actions = [extract_root_messages]
     targets = [str(cache_folder.joinpath(fname)) for fname in message_roots_cache_dir]
+    file_dep = [str(cache_folder.joinpath("ntlk_packages"))]
     with open(str(cache_folder.joinpath("cached_emails.pkl")),"rb") as f:
         cached_files = depickle(f)
-    file_dep = [v for v in cached_files.values()]
+    file_dep.extend(v for v in cached_files.values())
     return dict(actions=actions,file_dep=file_dep,targets=targets,verbosity=2)
 
 

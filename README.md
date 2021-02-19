@@ -18,7 +18,7 @@ Isolated downloader demonstration steps:
 	|- src
 		|- code files and stuff...
 	|- .gitignore
-	|- downloader_environment.yml   # this environment file gives minimal footprint for downloading and caching emails.
+	|- downloader_environment.yml 	# this environment file gives minimal footprint for downloading and caching emails.
 	|- environment.yml     			# this environment file is for full classification pipeline
 	|- README.md
 	|- setup.py
@@ -42,8 +42,15 @@ Isolated downloader demonstration steps:
    * This will result in the creation of console entry-points to the program for easy command line interactions.
    * output should look something like this:
 ```
+	$ python -m pip install -e .
 	Obtaining file:///D:/GitHub_Remotes/shcool/EmailClassification
 	Installing collected packages: EmailClassification
 	  Running setup.py develop for EmailClassification
 	Successfully installed EmailClassification
 ```
+   * We can now call the downloader command line entry point `email_download` to get the default implementation of the downlaoder.
+   	  * The default implementation will download from the hard-coded email server, targeting the hard-coded account and password, and will cache the downloaded emails in the `*/EmailClassification/cache_files/` folder,
+      * Alternatively, you can call `email_download /path/to/your/desired/cache/point`
+         * This custom cache directory will be created should it not already exist.
+   * If you would like to manually inspect the entire list of entry points the `setup.py` file created, see the keyword `entry_points` at the bottom of the `setup.py` file.
+      * This list is subject to change over time as further entry points are added.

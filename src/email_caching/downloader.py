@@ -109,9 +109,9 @@ def doit_email_downloader(targets:list):
     email_downloader(targets[0])
 
 if __name__ == '__main__':
-    my_imaginary_path = "../another_dir/header_keys.pkl"
-    test_cache_target = Path(my_imaginary_path).resolve()
-    # here = Path(__file__).resolve().parent
-    # test_cache_target = here.joinpath("test_cache_dir/header_keys.pkl")
+    # my_imaginary_path = "../another_dir/header_keys.pkl"
+    # test_cache_target = Path(my_imaginary_path).resolve()
+    here = Path(__file__).resolve().parent
+    test_cache_target = here.joinpath("test_cache_dir/header_keys.pkl")
     test_cache_target.parent.mkdir(parents=True,exist_ok=True)
     email_downloader(test_cache_target)
