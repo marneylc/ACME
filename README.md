@@ -31,4 +31,19 @@ Isolated downloader demonstration steps:
             * gives a verbose listing of packages and their versions
          * or you can call `conda env export --from-history`
             * This will tell you explicitly what the `downloader_environment.yml` file required.
-5. 
+5. Sanity check:
+   * You should be in a conda activated terminal, inside of the `email_downlaoder_env` virtual environment.
+   * You should also be in the `EmailClassification` folder, which is the root of the project, 
+   * The `setup.py` file should also be in the `EmailClassification` folder.
+6. Now we have `pip` use the `setup.py` file to modify the environment.
+   * ` python -m pip install -e .`
+      * tells python to run pip install with the `-e` flag that signals to use a local `setup.py` file.
+      * we pass `.` to say that the `setup.py` file is located in the current working directory.
+   * This will result in the creation of console entry-points to the program for easy command line interactions.
+   * output should look something like this:
+	```
+	Obtaining file:///D:/GitHub_Remotes/shcool/EmailClassification
+	Installing collected packages: EmailClassification
+	  Running setup.py develop for EmailClassification
+	Successfully installed EmailClassification
+	```
