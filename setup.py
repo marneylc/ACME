@@ -80,7 +80,7 @@ setup(
 
     # This should be a valid email address corresponding to the author listed
     # above.
-    author_email='petersryan84@gmail.com',  # Optional
+    # author_email='petersryan84@gmail.com',  # Optional
 
     # Classifiers help users find your project by categorizing it.
     #
@@ -144,12 +144,12 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=[
-        "numpy",
-        "numba",
-        "doit",
-        "nltk",
-    ],  # Optional
+    # install_requires=[
+    #     "numpy",
+    #     "numba",
+    #     "doit",
+    #     "nltk",
+    # ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
@@ -184,14 +184,15 @@ setup(
     #
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
-    # entry_points={  # Optional
-    #     'console_scripts': [
-    #         "email_classifier=src.__main__:main",
-    #         # 'unet=UnetVisualized.unet_source.__main__:main',
-    #         # 'unet_train=UnetVisualized.unet_source.__main__:main',
-    #         # "unet_visualize=UnetVisualized.presentation_tools.__main__:main"
-    #     ],
-    # },
+    entry_points={  # Optional
+        'console_scripts': [
+            "email_download=src.email_caching.downloader:email_downloader"
+            "email_classifier=src.__main__:main",
+            # 'unet=UnetVisualized.unet_source.__main__:main',
+            # 'unet_train=UnetVisualized.unet_source.__main__:main',
+            # "unet_visualize=UnetVisualized.presentation_tools.__main__:main"
+        ],
+    },
 
     # List additional URLs that are relevant to your project as a dict.
     #

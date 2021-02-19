@@ -47,13 +47,16 @@ def pickle_dump(obj,path,mode="wb",/, protocol=-1):
             gc.enable()
 
 
-def email_downloader(cache_root)->None:
+def email_downloader(cache_root=None)->None:
     """Given a list of output directory paths, will download files from our email address and cache them.
 
     :param targets: A list of strings representing directory paths (absolute or relative) for where we should
                     cache our downloaded emails.
     :return: None
     """
+    if cache_root is None:
+        from src import cache_folder
+        cache_root = str(cache_folder.joinpath("cached_emails.pkl"))
     if not isinstance(cache_root,Path):
         cache_location = Path(cache_root).resolve()
     else:
@@ -69,7 +72,7 @@ def email_downloader(cache_root)->None:
     bytes_parser = BytesParser(policy=policy_default)
     with imaplib.IMAP4_SSL(imap_url) as con:
         con.login(target_email,bad_practice)
-        con.select() # defaults to selecting "INBOX"
+        con.select("INBOX") # defaults to selecting "INBOX"
         inbox_status = con.status('INBOX','(MESSAGES RECENT UIDNEXT UIDVALIDITY UNSEEN)')
         info.info(f"{inbox_status=}")
         # con.search(None,"ALL") returns a tuple, with the first element being the condition of the data_ids.
@@ -95,6 +98,7 @@ def email_downloader(cache_root)->None:
                 _,body_structure = con.fetch(mail_id, structure_retrieval_code)
                 body_structure = [body_structure_splitter.sub(")|(",b.decode(u8)).split("|") for b in body_structure]
                 email_msg = bytes_parser.parsebytes(message)
+
                 file_hash = hashlib.sha224(str(header_key).encode(u8))
                 fname = emails_dir.joinpath(file_hash.hexdigest())
                 pickle_dump((email_header,body_structure,email_msg),fname)
@@ -105,7 +109,9 @@ def doit_email_downloader(targets:list):
     email_downloader(targets[0])
 
 if __name__ == '__main__':
-    here = Path(__file__).resolve().parent
-    test_cache_target = here.joinpath("test_cache_dir/header_keys.pkl")
+    my_imaginary_path = "../another_dir/header_keys.pkl"
+    test_cache_target = Path(my_imaginary_path).resolve()
+    # here = Path(__file__).resolve().parent
+    # test_cache_target = here.joinpath("test_cache_dir/header_keys.pkl")
     test_cache_target.parent.mkdir(parents=True,exist_ok=True)
     email_downloader(test_cache_target)
