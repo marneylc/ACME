@@ -1,4 +1,5 @@
 from src import cache_folder
+import sys
 import imaplib
 import warnings
 import pickle
@@ -56,12 +57,16 @@ def email_downloader(cache_root=None)->None:
     :return: None
     """
     if cache_root is None:
-        cache_root = str(cache_folder.joinpath("cached_emails.pkl"))
+        if len(sys.argv)>1:
+            cache_root = cache_folder.joinpath(str(sys.argv[1]))
+        else:
+            cache_root = cache_folder.joinpath("cached_emails.pkl")
     if not isinstance(cache_root,Path):
         cache_location = Path(cache_root).resolve()
     else:
         cache_location = cache_root
     info.info(f"Caching emails to:\n\t{cache_location}")
+    # print(f"Caching emails to:\n\t{cache_location}")
     header_keys = {}
     existing_data = pickle_load(cache_location)
     header_keys.update(existing_data)
@@ -108,6 +113,8 @@ def email_downloader(cache_root=None)->None:
 
 def doit_email_downloader(targets:list):
     email_downloader(targets[0])
+
+
 
 if __name__ == '__main__':
     # my_imaginary_path = "../another_dir/header_keys.pkl"
