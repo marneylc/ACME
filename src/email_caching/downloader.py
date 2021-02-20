@@ -66,8 +66,8 @@ def email_downloader(cache_root=None)->None:
         cache_location = Path(cache_root).resolve()
     else:
         cache_location = cache_root
-    info.setLevel(logging.WARNING)
-    info.info(f"Caching emails to:\n\t{cache_location}")
+    # info.setLevel(logging.WARNING)
+    info.warning(f"Caching emails to:\n\t{cache_location}")
     # print(f"Caching emails to:\n\t{cache_location}")
     header_keys = {}
     existing_data = pickle_load(cache_location)
@@ -82,7 +82,7 @@ def email_downloader(cache_root=None)->None:
         con.login(target_email,bad_practice)
         con.select("INBOX") # defaults to selecting "INBOX"
         inbox_status = con.status('INBOX','(MESSAGES RECENT UIDNEXT UIDVALIDITY UNSEEN)')
-        info.info(f"{inbox_status=}")
+        info.warning(f"{inbox_status=}")
         # con.search(None,"ALL") returns a tuple, with the first element being the condition of the data_ids.
         _,data_ids = con.search(None,"ALL")
         # data = con.search(None,"FROM","petersryan84@gmail.com")[1]
