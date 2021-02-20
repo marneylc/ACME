@@ -48,7 +48,7 @@ Isolated downloader demonstration steps:
 	  Running setup.py develop for EmailClassification
 	Successfully installed EmailClassification
 ```
-   * We can now call the downloader command line entry point `email_download` to get the default implementation of the downlaoder.
+7. We can now call the downloader command line entry point `email_download` to get the default implementation of the downlaoder.
    	  * The default implementation will download from the hard-coded email server, targeting the hard-coded account and password, and will cache the downloaded emails in the `*/EmailClassification/cache_files/` folder,
       * Alternatively, you can call `email_download /path/to/your/desired/cache/point`
          * This custom cache directory will be created should it not already exist.
