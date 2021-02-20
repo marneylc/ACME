@@ -1,11 +1,12 @@
+from src import cache_folder
 import imaplib
 import warnings
 import pickle
 import gc
-from pathlib import Path
 import hashlib
 from email.parser import BytesParser
 from email.policy import default as policy_default
+from pathlib import Path
 from src.custom_logger import get_logger
 import re
 
@@ -55,7 +56,6 @@ def email_downloader(cache_root=None)->None:
     :return: None
     """
     if cache_root is None:
-        from src import cache_folder
         cache_root = str(cache_folder.joinpath("cached_emails.pkl"))
     if not isinstance(cache_root,Path):
         cache_location = Path(cache_root).resolve()
@@ -68,7 +68,7 @@ def email_downloader(cache_root=None)->None:
     bad_practice = "oferoyrtvimlhqdd"
     imap_url = "imap.gmail.com"
     emails_dir = cache_location.parent.joinpath("emails")
-    emails_dir.mkdir(exist_ok=True)
+    emails_dir.mkdir(parents=True,exist_ok=True)
     bytes_parser = BytesParser(policy=policy_default)
     with imaplib.IMAP4_SSL(imap_url) as con:
         con.login(target_email,bad_practice)
