@@ -310,7 +310,9 @@ def get_logger(root_name: str,
     logger = logging.getLogger(root_name).getChild(child_name)
     _logger_setup_kwargs = dict(logger=logger, header_label=header_label, formatter=formatter, level=level,
                                 level_normalized=level_normalized, handler_delegate=handler_delegate, **handler_kwargs)
-    return logger_registration_dict.setdefault(logger.name, _logger_setup(**_logger_setup_kwargs))
+    if logger.name not in logger_registration_dict:
+        logger_registration_dict[logger.name] = _logger_setup(**_logger_setup_kwargs)
+    return logger_registration_dict[logger.name]
 
 
 class LogManager:
