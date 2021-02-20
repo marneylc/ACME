@@ -186,11 +186,8 @@ setup(
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional
         'console_scripts': [
-            "email_download=src.email_caching.downloader:email_downloader"
-            "email_classifier=src.__main__:main",
-            # 'unet=UnetVisualized.unet_source.__main__:main',
-            # 'unet_train=UnetVisualized.unet_source.__main__:main',
-            # "unet_visualize=UnetVisualized.presentation_tools.__main__:main"
+            ["email_download=src.email_caching.downloader:email_downloader"],
+            ["email_classifier=src.__main__:main",]
         ],
     },
 
