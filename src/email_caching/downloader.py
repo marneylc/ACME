@@ -61,6 +61,7 @@ def email_downloader(cache_root=None)->None:
         cache_location = Path(cache_root).resolve()
     else:
         cache_location = cache_root
+    info.info(f"Caching emails to:\n\t{cache_location}")
     header_keys = {}
     existing_data = pickle_load(cache_location)
     header_keys.update(existing_data)
