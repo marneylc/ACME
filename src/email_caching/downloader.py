@@ -8,7 +8,7 @@ import hashlib
 from email.parser import BytesParser
 from email.policy import default as policy_default
 from pathlib import Path
-from src.custom_logger import get_logger
+from src.custom_logger import get_logger, logging
 import re
 
 body_structure_splitter = re.compile("\)\(")
@@ -56,6 +56,7 @@ def email_downloader(cache_root=None)->None:
                     cache our downloaded emails.
     :return: None
     """
+    # ToDo: implement an argparse parser... >.< ...  to handle commandline interfacing.
     if cache_root is None:
         if len(sys.argv)>1:
             cache_root = cache_folder.joinpath(str(sys.argv[1]))
@@ -65,6 +66,7 @@ def email_downloader(cache_root=None)->None:
         cache_location = Path(cache_root).resolve()
     else:
         cache_location = cache_root
+    info.setLevel(logging.WARNING)
     info.info(f"Caching emails to:\n\t{cache_location}")
     # print(f"Caching emails to:\n\t{cache_location}")
     header_keys = {}
