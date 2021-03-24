@@ -22,6 +22,7 @@ unet\.ini
 **/*output.txt
 **/*inspection*
 **/data/
+**/test_cache_dir/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
