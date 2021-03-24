@@ -1,4 +1,4 @@
-from src import cache_folder
+from src.pathing_defs import cache_folder
 import sys
 import imaplib
 import warnings
@@ -73,6 +73,9 @@ def email_downloader(cache_root=None)->None:
     existing_data = pickle_load(cache_location)
     header_keys.update(existing_data)
     target_email = "luke.email.ryan.here@gmail.com"
+    # ToDo: HIGH PRIORITY --
+    #   Instead of saving the password inside the file, we should required the user to enter the password correctly
+    #   within some limited number of attempts.
     bad_practice = "oferoyrtvimlhqdd"
     imap_url = "imap.gmail.com"
     emails_dir = cache_location.parent.joinpath("emails")
@@ -88,7 +91,7 @@ def email_downloader(cache_root=None)->None:
         # data = con.search(None,"FROM","petersryan84@gmail.com")[1]
         mails = [elem for d in data_ids for elem in d.split()]
         # full_retrieval_code = "(RFC822)"
-        message_retrieval_code = "(RFC822.TEXT)"
+        message_retrieval_code = "(RFC822)"
         header_retrieval_code = "(RFC822.HEADER)"
         structure_retrieval_code = "(BODY)" # gets structural details about the message body (data encodings and such)
         u8 = "UTF-8"
@@ -106,16 +109,15 @@ def email_downloader(cache_root=None)->None:
                 _,body_structure = con.fetch(mail_id, structure_retrieval_code)
                 body_structure = [body_structure_splitter.sub(")|(",b.decode(u8)).split("|") for b in body_structure]
                 email_msg = bytes_parser.parsebytes(message)
-
                 file_hash = hashlib.sha224(str(header_key).encode(u8))
                 fname = emails_dir.joinpath(file_hash.hexdigest())
-                pickle_dump((email_header,body_structure,email_msg),fname)
+                pickle_dump({"header":email_header, "body_structure":body_structure, "EmailMessage":email_msg},fname)
                 header_keys[header_key] = fname
     pickle_dump(header_keys,cache_location)
 
+
 def doit_email_downloader(targets:list):
     email_downloader(targets[0])
-
 
 
 if __name__ == '__main__':

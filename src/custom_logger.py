@@ -3,17 +3,18 @@ try:
     # Pycharm IDE specific implementation detail
     # This is only needed in order to detect if we launched into debug mode from the Pycharm IDE
     import pydevd
-
     DEBUGGING = True
 except ImportError:
     # Not running from inside the Pycharm IDE, so let's check if the code was called
     # from a terminal with the `-d` system flag
     DEBUGGING = sys.flags.debug == 1  # note that sys.flags is a namedtuple object
 
-from typing import Union, Any
+from typing import Union
 import logging
 from logging import Formatter
-
+from src.pathing_defs import project_root_folder
+from datetime import datetime as dt
+from pathlib import Path
 # the following "table" of _data was taken from the official python docs for
 # python version 3.6.8 on May 5, 2019
 # found here: https://docs.python.org/3.6/library/logging.html
@@ -151,6 +152,19 @@ LEVELS_STR2INT = {
     "ERROR": logging.ERROR,
     "CRITICAL": logging.CRITICAL}
 
+LEVELS_INT2STR = {v:k for k,v in LEVELS_STR2INT.items()}
+
+logging_target_files = {
+    "DEBUG":"**/logging_output/debug/{}.log",
+    "INFO":"**/logging_output/info/{}.log",
+    "WARNING":"**/logging_output/warning/{}.log",
+    "ERROR":"**/logging_output/error/{}.log",
+    "CRITICAL":"**/logging_output/critical/{}.log",
+    "LEVEL SPECIAL":{
+        # for future cases where the code requires a clearly named custom implementation
+        # place that implementation here and special handling can be developed for it.
+    }
+}
 
 def _build_default_formatter(level:int,child_name:str,colr_id:int)->logging.Formatter:
     if level < logging.WARNING:  # logging.WARNING == 30
@@ -293,7 +307,8 @@ def get_logger(root_name: str,
                formatter: Formatter = None,
                level: Union[int, str] = None,
                logger_registration_dict: dict = LOGGER_COLLECTION,
-               handler_delegate=logging.StreamHandler, **handler_kwargs)->logging.Logger:
+               handler_delegate=logging.StreamHandler,
+               do_file_output:bool=False, **handler_kwargs)->logging.Logger:
     level = level if level is not None else (logging.DEBUG if DEBUGGING else logging.NOTSET)
     if isinstance(level, str):
         level = LEVELS_STR2INT.get(level.upper(), logging.NOTSET)
@@ -399,7 +414,54 @@ class LogManager:
             setattr(self,field,value)
 
 
+def get_logging_file_target(level:str or int, fname:str or Path, just_first:bool=True):
+    def do_backup(p):
+        if p.exists():
+            backup = p.with_name(p.name + ".backup")
+            with open(backup, "a", encoding="utf-8") as f:
+                f.write(p.read_text("utf-8"))
+        with open(p, "w", encoding="utf-8") as f:
+            f.write(f"{level} -- START: {dt.now()}\n")
+        return p
+    if isinstance(level,int):
+        level = LEVELS_INT2STR.get(level,logging.getLevelName(level))
+    level = level.upper()
+    if not fname:
+        raise ValueError("Received an empty file name when deriving output file path for logging")
+    for k,v in logging_target_files.items():
+        if isinstance(v,str):
+            path = project_root_folder.joinpath(v[3:]).parent
+            path.mkdir(parents=True,exist_ok=True)
+        else:
+            for sk,sv in v.items():
+                path = project_root_folder.joinpath(f"special/{sv[3:]}").parent
+                path.mkdir(parents=True, exist_ok=True)
+    if "SPECIAL" in level:
+        raise NotImplementedError(f"Handling of special case logging targets has not be implemented yet.\n\ttarget fname: {fname}")
+    if fname.endswith(".log"):
+        fname = fname.strip(".log")
+    target = logging_target_files[level].format(fname)
+    ret = []
+    path_gen = project_root_folder.rglob(target)
+    if just_first:
+        try:
+           return [do_backup(next(path_gen))]
+        except GeneratorExit:
+            # file does not already exist, so we need to create it.
+            return [do_backup(project_root_folder.joinpath(target[3:]))]
+    for p in path_gen:
+        ret.append(do_backup(p))
+    if not ret:
+        # no paths match search pattern, so we need to create an appropriate path
+        ret.append(do_backup(project_root_folder.joinpath(target[3:])))
+    return ret
 
 _logger_setup_internal_warning_logger = get_logger(__name__, "logger_setup_warning", level="WARNING")
 LOGGER_COLLECTION.pop(_logger_setup_internal_warning_logger.name,None)
 _logger_setup_internal_warning_logger = _logger_setup_internal_warning_logger.warning
+
+
+project_root = project_root_folder.name # gets the name of the project's root directory
+
+import_warnings_logger = get_logger(project_root,"import warnings",level="WARNING").warning
+root_info_logger = get_logger(project_root,"INFO log",level="INFO")

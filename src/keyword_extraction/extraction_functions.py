@@ -103,7 +103,7 @@ def do_pickle(obj,fd):
         gc.enable()
 
 
-def plain_body_extraction(msg:EmailMessage,fp=None):
+def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
     sample_body = msg.get_body(("plain",))
     if allow_debugging and fp is not None:
         dbg_capture_msg_structures(msg,sample_body,fp)
@@ -114,7 +114,7 @@ def plain_body_extraction(msg:EmailMessage,fp=None):
     else:
         encoding = None
         do_decode = False
-    charset = sample_body.get('Content-Type'," charset=\"utf-8-sig\"").split("charset=")[-1].strip("\"").lower()
+    charset = sample_body.get('Content-Type'," charset=\"utf-8-sig\"").split("charset=")[-1].split(';')[0].strip("\"").lower()
     sample_body = sample_body.get_payload(decode=do_decode)
     if isinstance(sample_body,bytes):
         sample_body1:bytes
@@ -151,23 +151,26 @@ def extract_root_messages(targets:list, file_dep:list):
     :return:
     """
     cached_roots_dir = Path(targets[0])
-    dbg_structure_path = Path(__file__).resolve().parent.joinpath("debug_structures")
-    dbg_structure_path.mkdir(exist_ok=True)
+    cached_roots_dir.mkdir(parents=True,exist_ok=True)
+    # dbg_structure_path = Path(__file__).resolve().parent.joinpath("debug_structures")
+    # dbg_structure_path.mkdir(exist_ok=True)
     message_root_map = {}
+    nltk_package_path = file_dep.pop(0)
     for path in file_dep:
         path = Path(path)
         key = path.name
         key = key[:key.rfind(".")]
         with open(path, "rb") as f:
-            msg = un_pickle(f) # type: EmailMessage
-        body = plain_body_extraction(msg)
+            msg_dict = un_pickle(f) # type: dict
+        msg:EmailMessage
+        msg, body_structure, header = msg_dict["EmailMessage"], msg_dict["body_structure"],msg_dict["header"]
+        body = plain_body_extraction(msg,body_structure,header)
         path = cached_roots_dir.joinpath(path.name)
         message_root_map[key] = path
         # modified_body = " ".join((word.replace("'re", " are").replace("'m", " am") for word in body.split(" ")))
         with open(path,"wb") as pkl_f:
             do_pickle(body,pkl_f)
     cached_roots_path = cached_roots_dir.joinpath(message_roots_map_fname)
-    cached_roots_path.parent.mkdir(parents=True,exist_ok=True)
     with open(cached_roots_path,"wb") as f:
         do_pickle(message_root_map,f)
 
