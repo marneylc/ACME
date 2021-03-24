@@ -19,6 +19,9 @@ unet\.ini
 **/sample_inputs/
 **/notes*
 **/informal_presentation*
+**/*output.txt
+**/*inspection*
+**/data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
