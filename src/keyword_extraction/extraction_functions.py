@@ -169,50 +169,99 @@ def extract_root_messages(targets:list, file_dep:list):
         message_root_map[key] = path
         # modified_body = " ".join((word.replace("'re", " are").replace("'m", " am") for word in body.split(" ")))
         with open(path,"wb") as pkl_f:
-            do_pickle(body,pkl_f)
+            do_pickle({"header":header,"body":body},pkl_f)
     cached_roots_path = cached_roots_dir.joinpath(message_roots_map_fname)
     with open(cached_roots_path,"wb") as f:
         do_pickle(message_root_map,f)
 
 
+# def alt_extract_keywords(targets:list, file_dep:list)->tuple:
+#     def count_vectorization(i,fd=stdout)->None:
+#         count_vectorizer = CountVectorizer()
+#         bag_of_words = count_vectorizer.fit_transform(message_bodies[i])
+#         feature_names = count_vectorizer.get_feature_names()
+#         # print(bag_of_words)
+#         # print(feature_names)
+#         widest = max((len(feat) for feat in feature_names))
+#         paired = sorted(zip(feature_names, bag_of_words.data), key=lambda tpl: tpl[1])
+#         for feature, count in paired:
+#             print(f"{feature:>{widest}} : {count:>5}",file=fd)
+#         return bag_of_words,feature_names
+#
+#     def tf_idf_vectorization(i,fd=stdout)->tuple:
+#         tfidf_vectorizer = TfidfVectorizer()
+#         values = tfidf_vectorizer.fit_transform(message_bodies[i])
+#         feature_names = tfidf_vectorizer.get_feature_names()
+#         widest = max((len(feat) for feat in feature_names))
+#         paired = sorted(zip(feature_names, values.data), key=lambda tpl: tpl[1])
+#         for feat,val in paired:
+#             print(f"{feat:>{widest}} : {val:>5}",file=fd)
+#         return values,feature_names
+#
+#     lemmatizer_ref = WordNetLemmatizer()
+#     # stopwords_set = set(stopwords.words("english"))
+#     # stopwords_set = {"the","be","to","a"}
+#     stopwords_set = {}
+#     # excluded_punctuation = string.punctuation
+#     excluded_punctuation = ".,"
+#     keyword_extraction_path = Path(targets[0])
+#     keyword_extraction_path.mkdir(parents=True,exist_ok=True)
+#     message_bodies = [[],[],[]]
+#     no_dupes = set()
+#     for path in file_dep[1:]:
+#         with open(path,"rb") as f:
+#             s = un_pickle(f)
+#         if s:
+#             tokenized = list(filter(lambda token: token not in excluded_punctuation and token.lower() not in stopwords_set,word_tokenize(s,"english",preserve_line=False)))
+#             for i in range(len(tokenized)-1,0,-1):
+#                 if tokenized[i] in ("'m","'re"):
+#                     tokenized[i-1] += tokenized.pop(i)
+#                     if tokenized[i].lower() == "helium" and path not in no_dupes:
+#                         print(path)
+#                         no_dupes.add(path)
+#             widest = max((len(w) for w in tokenized))
+#             if widest>30:
+#                 continue
+#             lemma = [lemmatizer_ref.lemmatize(word,pos=wordnet.VERB) for word in tokenized]
+#             message_bodies[0].append(s)
+#             message_bodies[1].append(" ".join(lemma))
+#             message_bodies[2].append(lemma)
+#
+#     import json
+#     with open("quick_bodies_inspection.json","w") as f:
+#         json.dump(message_bodies,f,indent=4)
+#     with open("count_vectorization_output.txt","w") as cv_f:
+#         word_bag = count_vectorization(1,cv_f)
+#
+#     with open("tf_idf_vectorization_output.txt","w") as tfidf_f:
+#         tf_idf = tf_idf_vectorization(1,tfidf_f)
+#     dbg_do_pandas_inspection(word_bag,tf_idf)
+
+
 def extract_keywords(targets:list, file_dep:list)->tuple:
-    def count_vectorization(i,fd=stdout)->None:
-        count_vectorizer = CountVectorizer()
-        bag_of_words = count_vectorizer.fit_transform(message_bodies[i])
-        feature_names = count_vectorizer.get_feature_names()
-        # print(bag_of_words)
-        # print(feature_names)
-        widest = max((len(feat) for feat in feature_names))
-        paired = sorted(zip(feature_names, bag_of_words.data), key=lambda tpl: tpl[1])
-        for feat, count in paired:
-            print(f"{feat:>{widest}} : {count:>5}",file=fd)
-        return bag_of_words,feature_names
-
-    def tf_idf_vectorization(i,fd=stdout)->tuple:
-        tfidf_vectorizer = TfidfVectorizer()
-        values = tfidf_vectorizer.fit_transform(message_bodies[i])
-        feature_names = tfidf_vectorizer.get_feature_names()
-        widest = max((len(feat) for feat in feature_names))
-        paired = sorted(zip(feature_names, values.data), key=lambda tpl: tpl[1])
-        for feat,val in paired:
-            print(f"{feat:>{widest}} : {val:>5}",file=fd)
-        return values,feature_names
-
     lemmatizer_ref = WordNetLemmatizer()
-    stopwords_set = set(stopwords.words("english"))
+    # stopwords_set = set(stopwords.words("english"))
     # stopwords_set = {"the","be","to","a"}
+    stopwords_set = {}
+    # excluded_punctuation = string.punctuation
+    excluded_punctuation = ".,"
     keyword_extraction_path = Path(targets[0])
     keyword_extraction_path.mkdir(parents=True,exist_ok=True)
-    message_bodies = [[],[],[]]
+    message_bodies = [[],[],[],[]]
     no_dupes = set()
     for path in file_dep[1:]:
+        path = Path(path)
         with open(path,"rb") as f:
-            s = un_pickle(f)
+            d = un_pickle(f)
+            s = d["body"]
+            header = d["header"]
         if s:
-            tokenized = list(filter(lambda token: token not in string.punctuation and token.lower() not in stopwords_set,word_tokenize(s,"english",preserve_line=False)))
+            tokenized = list(filter(lambda token: token not in excluded_punctuation and token.lower() not in stopwords_set,word_tokenize(s,"english",preserve_line=False)))
             for i in range(len(tokenized)-1,0,-1):
                 if tokenized[i] in ("'m","'re"):
-                    tokenized[i-1] += tokenized.pop(i)
+                    _s = tokenized[i-1] + tokenized.pop(i)
+                    _s = _s.replace("'","__") # the word CountVectorizer class won't recognize contractions
+                    tokenized[i-1] = _s
                     if tokenized[i].lower() == "helium" and path not in no_dupes:
                         print(path)
                         no_dupes.add(path)
@@ -223,19 +272,50 @@ def extract_keywords(targets:list, file_dep:list)->tuple:
             message_bodies[0].append(s)
             message_bodies[1].append(" ".join(lemma))
             message_bodies[2].append(lemma)
+            message_bodies[3].append(f"Subject: '{header['Subject']}'")
+        else:
+            print(f"for the following path, the body text string was empty:\n\t{path=}\n\t{header['Subject']=}\n\t{s=}")
 
+    _keyword_extraction_helper(message_bodies)
+
+def _count_vectorization(data, fd=stdout)->tuple:
+    count_vectorizer = CountVectorizer(token_pattern=r"(?u:\b\w\w+\b)")
+    bag_of_words = count_vectorizer.fit_transform(data)
+    feature_names = count_vectorizer.get_feature_names()
+    # print(bag_of_words)
+    # print(feature_names)
+    widest = max((len(feat) for feat in feature_names))
+    paired = sorted(zip(feature_names, bag_of_words.data), key=lambda tpl: tpl[1])
+    for feature, count in paired:
+        print(f"{feature:>{widest}} : {count:>5}",file=fd)
+    return bag_of_words,feature_names
+
+
+def _tf_idf_vectorization(data, fd=stdout)->tuple:
+    tfidf_vectorizer = TfidfVectorizer()
+    values = tfidf_vectorizer.fit_transform(data)
+    feature_names = tfidf_vectorizer.get_feature_names()
+    widest = max((len(feat) for feat in feature_names))
+    paired = sorted(zip(feature_names, values.data), key=lambda tpl: tpl[1])
+    for feat,val in paired:
+        print(f"{feat:>{widest}} : {val:>5}",file=fd)
+    return values,feature_names
+
+
+def _keyword_extraction_helper(message_bodies):
     import json
     with open("quick_bodies_inspection.json","w") as f:
         json.dump(message_bodies,f,indent=4)
     with open("count_vectorization_output.txt","w") as cv_f:
-        word_bag = count_vectorization(1,cv_f)
-
+        word_bag = _count_vectorization(message_bodies[1], cv_f)
+        # for msg_data,name in zip(message_bodies[1],message_bodies[3]):
+        #     word_bag.append((name,_count_vectorization(msg_data, cv_f)))
     with open("tf_idf_vectorization_output.txt","w") as tfidf_f:
-        tf_idf = tf_idf_vectorization(1,tfidf_f)
-    dbg_do_pandas_inspection(word_bag,tf_idf)
+        tf_idf = _tf_idf_vectorization(message_bodies[1], tfidf_f)
+    dbg_do_pandas_inspection(word_bag,tf_idf, message_bodies[3])
 
 
-def dbg_do_pandas_inspection(word_bag,tf_idf):
+def dbg_do_pandas_inspection(word_bag, tf_idf, headers:list):
     import pandas as pd
     from plotly.subplots import make_subplots
     import plotly.graph_objs as go
@@ -244,15 +324,17 @@ def dbg_do_pandas_inspection(word_bag,tf_idf):
     pd.options.plotting.backend = "plotly"
     def add_stats_columns(df:pd.DataFrame)->None:
         ops = [
-            ("Summed",df.sum(axis=1)),
-            ("Averaged",df.mean(axis=1)),
             ("Min",df.min(axis=1)),
-            ("midx",df.idxmin(axis=1)),
+            ("min_idx",df.idxmin(axis=1)),
+            ("Max",df.max(axis=1)),
+            ("max_idx",df.idxmax(axis=1)),
+            ("Averaged",df.mean(axis=1)),
             ("Median",df.median(axis=1)),
             ("Mode",df.mode(axis=1).mean(axis=1,numeric_only=True)),
-            ("Max",df.max(axis=1)),
-            ("Midx",df.idxmax(axis=1)),
+            ("Variance",df.var(axis=1),
+             ),
         ]
+        df.rename({k:headers[k] for k in df.columns}, axis="columns")
         for col_name,values in ops:
             df.insert(len(df.columns),col_name,values)
         return
@@ -262,11 +344,17 @@ def dbg_do_pandas_inspection(word_bag,tf_idf):
 
     add_stats_columns(wb_df)
     add_stats_columns(tfidf_df)
-    sortable_map = {k:tfidf_df.loc[k,"Max"] for k in tfidf_df.index}
-    wb_df.sort_index(axis=0,inplace=True,key=lambda x:[sortable_map[i] for i in x])
-    tfidf_df.sort_index(axis=0,inplace=True,key=lambda x:[sortable_map[i] for i in x])
-    tf_normed = tfidf_df.copy()
-    wb_normed = wb_df.copy()
+    tfsortable_map = {k:tfidf_df.loc[k,"Max"] for k in tfidf_df.index}
+    tfidf_df.sort_index(axis=0,inplace=True,key=lambda x:[tfsortable_map[i] for i in x])
+
+    wbsortable_map = {k:wb_df.loc[k,"Max"] for k in wb_df.index}
+    wb_df.sort_index(axis=0,inplace=True,key=lambda x:[wbsortable_map[i] for i in x])
+
+    tfidf_df.rename({k:f"tf-{k}" for k in tfidf_df.columns},axis="columns")
+    wb_df.rename({k:f"wb-{k}" for k in wb_df.columns},axis="columns")
+
+    tf_normed:pd.DataFrame = tfidf_df.copy()
+    wb_normed:pd.DataFrame = wb_df.copy()
     tf_max = tfidf_df.max(axis=0)
     wb_max = wb_df.max(axis=0)
     for col in tfidf_df.columns:
@@ -274,49 +362,53 @@ def dbg_do_pandas_inspection(word_bag,tf_idf):
         wb_normed[col] /= wb_max[col]
     normalized = wb_normed - tf_normed
     # normalized += pd.DataFrame.abs(normalized.min(axis=0))
+    # fig1 = go.Figure()
+    fig1 = make_subplots(2, 1,subplot_titles=("tf-idf normalized data","tf-idf raw data"))
+    fig1.update_layout(title="tf-idf data")
+    for t,col in zip(tf_normed.plot.line().data,tf_normed.columns):
+        # fig1.add_scatter(y=t,name=col)
+        fig1.add_trace(dict(x=t.x,y=t.y,name=f"normed_{col}"),row=1,col=1)
+    for t,col in zip(tfidf_df.plot.line().data,tfidf_df.columns):
+        # fig1.add_scatter(y=t,name=col)
+        fig1.add_trace(dict(x=t.x,y=t.y,name=f"raw_{col}"),row=2,col=1)
 
-    tfidf_df.rename({k:f"tf-{k}" for k in tfidf_df.columns},axis="columns")
-    wb_df.rename({k:f"wb-{k}" for k in wb_df.columns},axis="columns")
+    # fig2 = go.Figure()
+    # for t,col in zip(wb_normed.plot.line().data,wb_normed.columns):
+    #     fig1.add_scatter(y=t,name=col)
+    fig2 = make_subplots(2,1,subplot_titles=("Wordbag normalized word counts","Wordback raw word counts"))
+    fig2.update_layout(title="Wordbag data")
+    for t,col in zip(wb_normed.plot.line().data,wb_normed.columns):
+        fig2.add_trace(dict(x=t.x,y=t.y,name=f"normed_{col}"),row=1,col=1)
+    for t,col in zip(wb_df.plot.line().data,wb_df.columns):
+        fig2.add_trace(dict(x=t.x,y=t.y,name=f"raw_{col}"),row=2,col=1)
 
-    fig1 = make_subplots(2, 1,subplot_titles=("tf-idf data","word bag data"))
-    for t in tf_normed.plot.line().data:
-        fig1.add_trace(t,row=1,col=1)
-    for t in wb_normed.plot.line().data:
-        fig1.add_trace(t,row=2,col=1)
-
-    fig2 = make_subplots(2,1,subplot_titles=("line plots","bar plots"))
-    for t in normalized.plot.line().data:
-        fig2.add_trace(t,row=1,col=1)
-    for t in normalized.plot.bar().data:
-        fig2.add_trace(t, row=2, col=1)
-
-    fig3 = go.Figure()
-    fig3.update_layout(title="Big bar plot")
-    markers_d = dict(mode="lines+markers",line=dict(width=1))
-    for t1,t2 in zip(tf_normed.plot.line().data,wb_normed.plot.line().data):
-        t1_slopes = [0]*len(t1.x)
-        t2_slopes = t1_slopes[:]
-        diff_slope = t1_slopes[:]
-        diff = t2.y-t1.y
-        for i in range(1,len(t1.x)):
-            t1_slopes[i] += t1.y[i]-t1.y[i-1]
-            t2_slopes[i] += t2.y[i]-t2.y[i-1]
-            diff_slope[i] += diff[i]-diff[i-1]
-
-        fig3.add_scattergl(x=t1.x,y=t1.y,name=t1.name+"_tf",**markers_d)
-        fig3.add_scattergl(x=t1.x,y=t1_slopes,name=t1.name+"_tf_slope",**markers_d)
-
-        fig3.add_scattergl(x=t2.x,y=t2.y,name=t2.name+"_wb",**markers_d)
-        fig3.add_scattergl(x=t2.x,y=t2_slopes,name=t2.name+"_wb_slope",**markers_d)
-
-        fig3.add_scattergl(x=t2.x,y=diff,name=t2.name+"_diff",**markers_d)
-        fig3.add_scattergl(x=t2.x,y=diff_slope,name=t2.name+"_diff_slope",**markers_d)
+    # fig3 = go.Figure()
+    # fig3.update_layout(title="Big bar plot")
+    # markers_d = dict(mode="lines+markers",line=dict(width=1))
+    # for t1,t2 in zip(tf_normed.plot.line().data,wb_normed.plot.line().data):
+    #     t1_slopes = [0]*len(t1.x)
+    #     t2_slopes = t1_slopes[:]
+    #     diff_slope = t1_slopes[:]
+    #     diff = t2.y-t1.y
+    #     for i in range(1,len(t1.x)):
+    #         t1_slopes[i] += t1.y[i]-t1.y[i-1]
+    #         t2_slopes[i] += t2.y[i]-t2.y[i-1]
+    #         diff_slope[i] += diff[i]-diff[i-1]
+    #
+    #     fig3.add_scattergl(x=t1.x,y=t1.y,name=t1.name+"_tf",**markers_d)
+    #     fig3.add_scattergl(x=t1.x,y=t1_slopes,name=t1.name+"_tf_slope",**markers_d)
+    #
+    #     fig3.add_scattergl(x=t2.x,y=t2.y,name=t2.name+"_wb",**markers_d)
+    #     fig3.add_scattergl(x=t2.x,y=t2_slopes,name=t2.name+"_wb_slope",**markers_d)
+    #
+    #     fig3.add_scattergl(x=t2.x,y=diff,name=t2.name+"_diff",**markers_d)
+    #     fig3.add_scattergl(x=t2.x,y=diff_slope,name=t2.name+"_diff_slope",**markers_d)
 
 
     print("now to show figures")
     fig1.show()
     fig2.show()
-    fig3.show()
+    # fig3.show()
     print(f"diffs:\n{normalized}\n\n")
     print(f"tf_normed:\n{tf_normed}\n\n")
     print(f"wb_normed:\n{wb_normed}\n\n")
