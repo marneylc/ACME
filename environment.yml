@@ -11,6 +11,10 @@ dependencies:
   - beautifulsoup4
   - scikit-learn
   - pandas
-  - plotly
+  - dash
+  - dash-bootstrap-components
   - pip:
     - nltk
+    - google-api-python-client
+    - google-auth-httplib2
+    - google-auth-oauthlib
