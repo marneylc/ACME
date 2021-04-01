@@ -250,6 +250,7 @@ def _keyword_extraction_helper(message_bodies):
 
 
 def dbg_do_pandas_inspection(word_bag, tf_idf, headers:list):
+    import plotly.express as px
     pd.options.display.max_columns = 20
     pd.options.display.width = 400
     pd.options.plotting.backend = "plotly"
@@ -267,6 +268,17 @@ def dbg_do_pandas_inspection(word_bag, tf_idf, headers:list):
         df_max = df.sum(axis=0)
         for col in df.columns:
             df_normed[col] /= df_max[col]
+        # now we re-organize df_normed to show as a sort of bell-curve to give visual insight to the
+        # stdv and var of the word count distribution
+        normed_sortable_map = {}
+        indices = tuple(df_normed.index)
+        end = len(indices)
+        i = 0
+        for idx in range(0,len(indices),2):
+            normed_sortable_map[indices[idx]] = i
+            normed_sortable_map[indices[idx+1]] = end-i-1
+            i += 1
+        df_normed.sort_index(axis=0, inplace=True, key=lambda x: [normed_sortable_map[i] for i in x])
         return df,df_normed
 
     def build_figure(df:pd.DataFrame,fig_title,xaxis_title,yaxis_title):
@@ -280,12 +292,16 @@ def dbg_do_pandas_inspection(word_bag, tf_idf, headers:list):
                               y=.99,
                               xanchor="left",
                               x=.01,
-                          ),)
+                          ),
+                          plot_bgcolor="rgba(1,1,1,1)",
+                          )
         col:str
         for t, col in zip(df.plot.bar().data, df.columns):
             # name will drop the 'Subjec: ' portion of the column label as it's redundant in the plot legend
             if col.startswith("Subject: "):
                 name = col[col.find(": ")+2:]
+                if len(name)>30:
+                    name = name[:30]+"..."
             else:
                 name = col
             fig.add_bar(x=t.x, y=t.y, name=name)
