@@ -12,6 +12,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 import plotly.graph_objs as go
+from numba import njit, prange
+from numba.typed import List
 
 inpt_file_encoding = "UTF-8"
 fnames_tpl = namedtuple("target_fnames",["keywords","signatures","participants"])#
@@ -101,6 +103,18 @@ def do_pickle(obj,fd):
     finally:
         gc.enable()
 
+@njit(parallel=True,nogil=True)
+def numba_str_replace(words:str):
+    word_lst = words.split(" ")
+    for i in prange(len(word_lst)):
+        if word_lst[i] in ("=92","\u2019"):
+            word_lst[i] = "'"
+    for i in range(len(word_lst)-2,0,-1):
+        if word_lst[i]=="'":
+            quote = word_lst.pop(i)
+            quote += word_lst.pop(i)
+            word_lst[i-1] += quote
+    return " ".join(word_lst)
 
 def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
     sample_body = msg.get_body(("plain",))
@@ -109,7 +123,7 @@ def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
         print(msg.get_boundary())
     if "Content-Transfer-Encoding" in sample_body.keys():
         encoding = sample_body['Content-Transfer-Encoding']
-        do_decode = encoding == "base64"
+        do_decode = encoding in ("base64","quoted-printable")
     else:
         encoding = None
         do_decode = False
@@ -117,15 +131,18 @@ def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
     sample_body = sample_body.get_payload(decode=do_decode)
     if isinstance(sample_body,bytes):
         sample_body = sample_body.decode(encoding=charset)
+    # sample_body = sample_body.replace("=92","'")
+    sample_body = numba_str_replace(sample_body)
     header_matches = re_abstract_header_block.search(sample_body)
     end = -1
     while header_matches:
         end = header_matches.end()
+        test = sample_body[end:]
         header_matches = re_abstract_header_block.search(sample_body,end)
     init_end = end
-    while end>-1 and end < len(sample_body):
+    while -1 < end < len(sample_body):
         end += 1
-        if sample_body[end] != "\n":
+        if sample_body[end].strip():
             break
     else:
         end = max(min(init_end, len(sample_body) - 1),0)
@@ -135,7 +152,7 @@ def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
     sample_body = re_get_carriage_return.sub("\n", sample_body).split("\n")
     sample_body = [line for line in sample_body if line.strip()]
     sample_body = "\n".join(sample_body)
-    sample_body = re_plain_text_divider.split(sample_body)[-1]
+    # sample_body = re_plain_text_divider.split(sample_body)[-1] # meant to extract only the root message.
     # return sample_body,charset
     return sample_body
 
@@ -153,6 +170,7 @@ def extract_root_messages(targets:list, file_dep:list):
     # dbg_structure_path.mkdir(exist_ok=True)
     message_root_map = {}
     nltk_package_path = file_dep.pop(0)
+    body_structs = {}
     for path in file_dep:
         path = Path(path)
         key = path.name
@@ -161,6 +179,7 @@ def extract_root_messages(targets:list, file_dep:list):
             msg_dict = un_pickle(f) # type: dict
         msg:EmailMessage
         msg, body_structure, header = msg_dict["EmailMessage"], msg_dict["body_structure"],msg_dict["header"]
+        body_structs[msg["Subject"]] = body_structure
         body = plain_body_extraction(msg,body_structure,header)
         path = cached_roots_dir.joinpath(path.name)
         message_root_map[key] = path
@@ -182,7 +201,6 @@ def extract_keywords(targets:list, file_dep:list)->tuple:
     keyword_extraction_path = Path(targets[0])
     keyword_extraction_path.mkdir(parents=True,exist_ok=True)
     message_bodies = [[],[],[],[]]
-    no_dupes = set()
     for path in file_dep[1:]:
         path = Path(path)
         with open(path,"rb") as f:
@@ -192,15 +210,13 @@ def extract_keywords(targets:list, file_dep:list)->tuple:
         if s:
             tokenized = list(filter(lambda token: token not in excluded_punctuation and token.lower() not in stopwords_set,word_tokenize(s,"english",preserve_line=False)))
             for i in range(len(tokenized)-1,0,-1):
-                if tokenized[i] in ("'m","'re"):
-                    _s = tokenized[i-1] + tokenized.pop(i)
-                    _s = _s.replace("'","__") # the word CountVectorizer class won't recognize contractions
-                    tokenized[i-1] = _s
-                    if tokenized[i].lower() == "helium" and path not in no_dupes:
-                        print(path)
-                        no_dupes.add(path)
-            widest = max((len(w) for w in tokenized))
+                if len(tokenized[i])>30:# and "/" not in tokenized[i]:
+                    tokenized.pop(i)
+                elif "'" in tokenized[i]:
+                    tokenized[i-1] += tokenized.pop(i).replace("'","__")
+            widest = max((len(w) for w in tokenized if "/" not in w))
             if widest>30:
+                print(f"skipping file at: {path}\n\twidest word: {max(tokenized,key=lambda w:len(w) if '/' not in w else 0)}\n\n")
                 continue
             lemma = [lemmatizer_ref.lemmatize(word,pos=wordnet.VERB) for word in tokenized]
             message_bodies[0].append(s)
@@ -246,11 +262,11 @@ def _keyword_extraction_helper(message_bodies):
         #     word_bag.append((name,_count_vectorization(msg_data, cv_f)))
     with open("tf_idf_vectorization_output.txt","w") as tfidf_f:
         tf_idf = _tf_idf_vectorization(message_bodies[1], tfidf_f)
-    dbg_do_pandas_inspection(word_bag,tf_idf, message_bodies[3])
+    plotting_do_pandas_inspection(word_bag, tf_idf, message_bodies[3])
 
 
-def dbg_do_pandas_inspection(word_bag, tf_idf, headers:list):
-    import plotly.express as px
+def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list):
+    # import plotly.express as px
     pd.options.display.max_columns = 20
     pd.options.display.width = 400
     pd.options.plotting.backend = "plotly"
@@ -270,15 +286,18 @@ def dbg_do_pandas_inspection(word_bag, tf_idf, headers:list):
             df_normed[col] /= df_max[col]
         # now we re-organize df_normed to show as a sort of bell-curve to give visual insight to the
         # stdv and var of the word count distribution
-        normed_sortable_map = {}
-        indices = tuple(df_normed.index)
-        end = len(indices)
-        i = 0
-        for idx in range(0,len(indices),2):
-            normed_sortable_map[indices[idx]] = i
-            normed_sortable_map[indices[idx+1]] = end-i-1
-            i += 1
-        df_normed.sort_index(axis=0, inplace=True, key=lambda x: [normed_sortable_map[i] for i in x])
+        # normed_sortable_map = {}
+        # indices = tuple(df_normed.index)
+        # end = len(indices)-1
+        # i = 0
+        # try:
+        #     for idx in range(0,len(indices),2):
+        #         normed_sortable_map[indices[idx]] = i
+        #         normed_sortable_map[indices[idx+1]] = end-i
+        #         i += 1
+        # except IndexError:
+        #     pass
+        # df_normed.sort_index(axis=0, inplace=True, key=lambda x: [normed_sortable_map[i] for i in x])
         return df,df_normed
 
     def build_figure(df:pd.DataFrame,fig_title,xaxis_title,yaxis_title):
@@ -294,6 +313,9 @@ def dbg_do_pandas_inspection(word_bag, tf_idf, headers:list):
                               x=.01,
                           ),
                           plot_bgcolor="rgba(1,1,1,1)",
+                          hoverlabel={"namelength":-1,
+                                      "font_size":16,},
+                          hovermode="x unified",
                           )
         col:str
         for t, col in zip(df.plot.bar().data, df.columns):
