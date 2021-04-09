@@ -105,7 +105,10 @@ def do_pickle(obj,fd):
 
 @njit(parallel=True,nogil=True)
 def numba_str_replace(words:str):
-    word_lst = words.split(" ")
+    word_lst = List() # words.split(" ")
+    # [word_lst.append(w) for w in words.split(" ")]
+    for w in words.split(" "):
+        word_lst.append(w)
     for i in prange(len(word_lst)):
         if word_lst[i] in ("=92","\u2019"):
             word_lst[i] = "'"
