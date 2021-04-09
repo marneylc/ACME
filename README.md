@@ -59,13 +59,15 @@ Conceptual elements for possible classification tools:
 ===
 
 ### Speach Act Theory
-This model is based on aspects of the Speech Act Theory (Searle, 1969), which states that every utterance implies an action by the speaker with varying effects on both the speaker and the hearer. When applied to electronic conversations, the sender and the recipient perform the roles of the speaker/hearer whereas textual phrases function as utterances. Action items in the model consist of three parameters:
+The following excerpts were extracted from [Classifying Action Items for Semantic Email](./references/Classifying_Action_Items_for_Semantic_Email.pdf)
 
-* Action – what is being performed e.g. a request, a notification or an assignment
-* Object – the object of the action e.g. a request for a meeting
-* Subject – the subject/agent of the object if applicable e.g. who will/would attend the meeting
-
-Actions consist of Request – an action requiring a reply from the recipient (e.g. a question); Assign – an action requiring an activity but no reply (e.g. an order or a commitment); Suggest – an action involving an optional activity; and Deliver – the action of delivering data. Objects are categorised into Activities (Task and Event) and Data (Information and Resource). The subject parameter is only applicable to activities (being the task performer(s) or the event participant(s) – i.e. Sender, Recipient, Both). See the figure bellow...
-
-![Example Diagram](./presentaion_resources/Speach_Act_Theory_structure.png "Figure 1: The 22 action item instances for the classification task, with a short description")
-<figcaption>Figure 1: The 22 action item instances for the classification task, with a short description</figcaption>
+> ...This model is based on aspects of the Speech Act Theory (Searle, 1969), which states that every utterance implies an action by the speaker with varying effects on both the speaker and the hearer. When applied to electronic conversations, the sender and the recipient perform the roles of the speaker/hearer whereas textual phrases function as utterances. Action items in the model consist of three parameters:
+>
+>* Action – what is being performed e.g. a request, a notification or an assignment
+>* Object – the object of the action e.g. a request for a meeting
+>* Subject – the subject/agent of the object if applicable e.g. who will/would attend the meeting
+>
+>Actions consist of Request – an action requiring a reply from the recipient (e.g. a question); Assign – an action requiring an activity but no reply (e.g. an order or a commitment); Suggest – an action involving an optional activity; and Deliver – the action of delivering data. Objects are categorised into Activities (Task and Event) and Data (Information and Resource). The subject parameter is only applicable to activities (being the task performer(s) or the event participant(s) – i.e. Sender, Recipient, Both). See the figure bellow...
+>
+>![Example Diagram](./presentaion_resources/Speach_Act_Theory_structure.png "Figure 1: The 22 action item instances for the classification task, with a short description")
+><figcaption>Figure 1: The 22 action item instances for the classification task, with a short description</figcaption>
