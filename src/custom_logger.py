@@ -465,3 +465,7 @@ project_root = project_root_folder.name # gets the name of the project's root di
 
 import_warnings_logger = get_logger(project_root,"import warnings",level="WARNING").warning
 root_info_logger = get_logger(project_root,"INFO log",level="INFO")
+
+# third party logging supression
+if DEBUGGING:
+    logging.getLogger('numba').setLevel(logging.WARNING)

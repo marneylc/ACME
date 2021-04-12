@@ -72,9 +72,9 @@ if __name__ == '__main__':
         main()
     else:
         tasks = []
-        tasks.append(task_download_emails)
+        # tasks.append(task_download_emails)
         tasks.append(task_extract_root_message)
-        # tasks.append(task_extract_keywords)
+        tasks.append(task_extract_keywords)
 
         for task in tasks:
             emulate_doit(task())

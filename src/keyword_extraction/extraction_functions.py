@@ -28,6 +28,7 @@ re_plain_text_divider = re.compile("_{10,}")
 re_id_extraction = re.compile("(x_)+Signature")
 re_header_content = re.compile("(?P<line>(?P<key>\w+):\s*(?P<value>.+))")
 re_abstract_header_block = re.compile("(From:(?:.*\n)+?Subject:.*\n)",re.MULTILINE)
+# re_uni_chr = re.compile(r'\u([a-fA-F0-9]{4})')
 
 ESC_SEQ = "\033["
 charc = 90  # charcoal
@@ -58,7 +59,6 @@ def dbg_structure(root,msg, level=0, include_default=False):
     #     color_format = "* " if root is msg else ""
     #     reset = " *" if color_format else ""
     ret.append({"str":f"{tab} {{color_format}}{root.get_content_type()}{{suffix}}","suffix":(f' [{root.get_default_type()}]{{reset}}' if include_default else "{reset}"),"is_target":root is msg})
-
     if root.is_multipart():
         for subpart in root.get_payload():
             ret.extend(dbg_structure(subpart,msg, level+1, include_default))
@@ -103,6 +103,7 @@ def do_pickle(obj,fd):
     finally:
         gc.enable()
 
+
 @njit(parallel=True,nogil=True)
 def numba_str_replace(words:str):
     word_lst = List() # words.split(" ")
@@ -119,6 +120,7 @@ def numba_str_replace(words:str):
             word_lst[i-1] += quote
     return " ".join(word_lst)
 
+
 def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
     sample_body = msg.get_body(("plain",))
     if allow_debugging and fp is not None:
@@ -131,10 +133,15 @@ def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
         encoding = None
         do_decode = False
     charset = sample_body.get('Content-Type'," charset=\"utf-8-sig\"").split("charset=")[-1].split(';')[0].strip("\"").lower()
-    sample_body = sample_body.get_payload(decode=do_decode)
+    sample_body = sample_body.get_payload(decode=True)
     if isinstance(sample_body,bytes):
-        sample_body = sample_body.decode(encoding=charset)
+        # sample_body = sample_body.decode(encoding=charset)
+        sample_body = sample_body.decode(charset).encode("unicode_escape").decode("unicode_escape")
+    else:
+        sample_body = sample_body.encode("unicode_escape").decode("unicode_escape")
     # sample_body = sample_body.replace("=92","'")
+    # unichr = re_uni_chr.sub(lambda m: chr(int(m.group(1), 16)), sample_body)
+    # sample_body = unichr
     sample_body = numba_str_replace(sample_body)
     header_matches = re_abstract_header_block.search(sample_body)
     end = -1
@@ -265,7 +272,7 @@ def _keyword_extraction_helper(message_bodies):
         #     word_bag.append((name,_count_vectorization(msg_data, cv_f)))
     with open("tf_idf_vectorization_output.txt","w") as tfidf_f:
         tf_idf = _tf_idf_vectorization(message_bodies[1], tfidf_f)
-    plotting_do_pandas_inspection(word_bag, tf_idf, message_bodies[3])
+    # plotting_do_pandas_inspection(word_bag, tf_idf, message_bodies[3])
 
 
 def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list):
