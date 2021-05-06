@@ -31,7 +31,7 @@ if __name__ == '__main__':
     else:
         from src.dodo import task_download_emails,task_extract_root_message,task_extract_keywords
         tasks = []
-        # tasks.append(task_download_emails)
+        tasks.append(task_download_emails)
         tasks.append(task_extract_root_message)
         tasks.append(task_extract_keywords)
 

@@ -8,7 +8,7 @@ import hashlib
 from email.parser import BytesParser
 from email.policy import default as policy_default
 from pathlib import Path
-from src.custom_logger import get_logger, logging
+from src.custom_logger import get_logger
 import re
 
 body_structure_splitter = re.compile("\)\(")

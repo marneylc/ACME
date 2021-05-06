@@ -1,4 +1,5 @@
 # importing builti packages
+import os
 from collections import namedtuple
 import concurrent.futures as cf
 from email.message import EmailMessage
@@ -30,9 +31,11 @@ from numba.typed import List as numbaList
 # custom codebase imports
 from src import src_warning_logger as warning_logger
 from src import do_pickle, un_pickle
-from src.word_classification.word_extraction_classes import SentenceWordTagger, KeywordExtractor
+from src.word_classification.word_extraction_classes import KeywordExtractor
+from src.custom_logger import get_logger
 
 # creating global namespace variables
+info = get_logger(__name__,"downloader status updates",level="INFO")
 inpt_file_encoding = "UTF-8"
 fnames_tpl = namedtuple("target_fnames",["keywords","signatures","participants"])
 output_target_files = fnames_tpl._make(("keywords.pkl","signatures.pkl","participants.pkl"))
@@ -251,7 +254,7 @@ def extract_keywords(targets:list, file_dep:list)->tuple:
     with open("keyword_exctractors.json","w") as ext_f:
         json.dump([ext.to_json(4) for ext in extractors],ext_f,indent=4)
     # with open()
-    _keyword_extraction_helper(message_bodies,keyword_extraction_path)
+    _keyword_extraction_helper(message_bodies,keyword_extraction_path, False)
 
 
 def _count_vectorization(data, fd=stdout)->tuple:
@@ -278,7 +281,7 @@ def _tf_idf_vectorization(data, fd=stdout)->tuple:
     return values,feature_names
 
 
-def _keyword_extraction_helper(message_bodies:list, path_root:Path):
+def _keyword_extraction_helper(message_bodies:list, path_root:Path, do_plots:bool=True):
     with open("quick_bodies_inspection.json","w") as f:
         json.dump(message_bodies,f,indent=4)
     with open("count_vectorization_output.txt","w") as cv_f:
@@ -291,10 +294,10 @@ def _keyword_extraction_helper(message_bodies:list, path_root:Path):
         tf_idf_stopped = _tf_idf_vectorization(message_bodies[2][0], tfidf_f)
     # print("now to show figures")
     # plotting_do_pandas_inspection(word_bag, tf_idf, message_bodies[3], "with stop-words")
-    plotting_do_pandas_inspection(word_bag_stopped, tf_idf_stopped, message_bodies[3], "without stop-words",path_root)
+    plotting_do_pandas_inspection(word_bag_stopped, tf_idf_stopped, message_bodies[3], "without stop-words",path_root,do_plots=do_plots)
 
 
-def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list, context_str:str, out_path:Path):
+def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list, context_str:str, out_path:Path, do_plots:bool=True):
     # import plotly.express as px
     pd.options.display.max_columns = 20
     pd.options.display.width = 400
@@ -362,14 +365,24 @@ def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list, context_str:st
         return fig
 
     wb_df,wb_normed = build_count_dataframe()
-    wb_df.to_csv(out_path.joinpath("raw_word_count_matrix.csv"))
-    fig1 = build_figure(wb_normed,
-                        f"{context_str} Word count as ratios on range [0,1]",
-                        'Unique words found in documents',
-                        'Word count as ratio of (unique_word / sum(all_words))')
-    fig1.show()
-    fig2 = build_figure(wb_df,
-                        f"{context_str} Raw word counts",
-                        'Unique words found in documents',
-                        'Raw word counts')
-    fig2.show()
+    path = out_path.joinpath("raw_word_count_matrix.csv")
+    if path.exists():
+        warning_logger.warning("Notice!!! We detected that the target csv name on our target path already exists, generating name with a unique id suffix now")
+        index = 0
+        path=path.with_name(f"raw_word_count_matrix_{index}.csv")
+        while path.exists():
+            index+=1
+            path = path.with_name(f"raw_word_count_matrix_{index}.csv")
+    info.warning(f"writing word count matrix to:\n\t\t{str(path)}")
+    wb_df.to_csv(str(path))
+    if do_plots:
+        fig1 = build_figure(wb_normed,
+                            f"{context_str} Word count as ratios on range [0,1]",
+                            'Unique words found in documents',
+                            'Word count as ratio of (unique_word / sum(all_words))')
+        fig1.show()
+        fig2 = build_figure(wb_df,
+                            f"{context_str} Raw word counts",
+                            'Unique words found in documents',
+                            'Raw word counts')
+        fig2.show()
