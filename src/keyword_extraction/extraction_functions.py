@@ -1,26 +1,47 @@
-from pathlib import Path
-import pickle
-import gc
+# importing builti packages
+from collections import namedtuple
+import concurrent.futures as cf
 from email.message import EmailMessage
+from pathlib import Path
 import re
 from sys import stdout
-from collections import namedtuple
+import json
+
+# importing nltk packages
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
+from nltk import sent_tokenize
 from nltk import word_tokenize
+from nltk import pos_tag
+
+# importing processed text assistance tools
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+# importing container and data structure packages
 import pandas as pd
 import plotly.graph_objs as go
-from numba import njit, prange
-from numba.typed import List
 
+# importing performance and optimization packages
+from numba import njit, prange
+from numba.typed import List as numbaList
+
+
+# custom codebase imports
+from src import src_warning_logger as warning_logger
+from src import do_pickle, un_pickle
+from src.word_classification.word_extraction_classes import SentenceWordTagger, KeywordExtractor
+
+# creating global namespace variables
 inpt_file_encoding = "UTF-8"
-fnames_tpl = namedtuple("target_fnames",["keywords","signatures","participants"])#
+fnames_tpl = namedtuple("target_fnames",["keywords","signatures","participants"])
 output_target_files = fnames_tpl._make(("keywords.pkl","signatures.pkl","participants.pkl"))
 message_roots_cache_dir = "message_roots",
 message_roots_map_fname = "cached_roots_map.pkl"
 cached_email_bodies = {}
+
+# creating compiled regex patterns for text manipulation and classification prep
+# NOTE: the names of all regex variables start with re_
 re_condense_multi_newline_pattern = re.compile("(?:(\s*)\n(\s*))+")
 re_get_carriage_return = re.compile("(\r\n*)")
 re_linebreak_fix = re.compile("=(?:(?:\n)|(?:\r\n))")
@@ -28,7 +49,10 @@ re_plain_text_divider = re.compile("_{10,}")
 re_id_extraction = re.compile("(x_)+Signature")
 re_header_content = re.compile("(?P<line>(?P<key>\w+):\s*(?P<value>.+))")
 re_abstract_header_block = re.compile("(From:(?:.*\n)+?Subject:.*\n)",re.MULTILINE)
-# re_uni_chr = re.compile(r'\u([a-fA-F0-9]{4})')
+re_start_of_text_unicode = re.compile("<?\u0002>?")
+# url capture regex taken from: https://gist.github.com/gruber/8891611
+re_url_capture = re.compile(r"(?i)\b((https?:(?:/{1,3}|[a-z0-9%])|[a-z0-9.\-]+[.](?:com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|Ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)/)(?:[^\s()<>{}\[\]]+|\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\))+(?:\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’])|(?:(?<!@)[a-z0-9]+(?:[.\-][a-z0-9]+)*[.](?:com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|Ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)\b/?(?!@)))",re.MULTILINE)
+
 
 ESC_SEQ = "\033["
 charc = 90  # charcoal
@@ -88,31 +112,22 @@ def dbg_capture_msg_structures(msg,sample_body0,file_descriptors:list=None):
         print(file=fd)
 
 
-def un_pickle(fd):
-    gc.disable()
-    try:
-        return pickle.load(fd)
-    finally:
-        gc.enable()
-
-
-def do_pickle(obj,fd):
-    gc.disable()
-    try:
-        pickle.dump(obj,fd,protocol=-1)
-    finally:
-        gc.enable()
-
-
 @njit(parallel=True,nogil=True)
 def numba_str_replace(words:str):
-    word_lst = List() # words.split(" ")
-    # [word_lst.append(w) for w in words.split(" ")]
-    for w in words.split(" "):
+    word_lst = numbaList()
+    for w in words.replace("\r\n"," \n").split(" "):
         word_lst.append(w)
     for i in prange(len(word_lst)):
-        if word_lst[i] in ("=92","\u2019"):
-            word_lst[i] = "'"
+        wrd = list(word_lst[i])
+        for j,c in enumerate(wrd):
+            if wrd[j] in ("=92",u"\u2019",u"\u2018"):
+                wrd[j] = "'"
+            elif wrd[j]==u"\ufeff":
+                wrd[j] = " "
+            elif wrd[j]==u"\u2014":
+                wrd[j] = "--"
+        word_lst[i] = "".join(wrd)
+        # word_lst[i][j] = word_lst[i].replace("=92","'").replace(u"\u2019","'").replace(u"\u2018","'").replace(u"\ufeff","")
     for i in range(len(word_lst)-2,0,-1):
         if word_lst[i]=="'":
             quote = word_lst.pop(i)
@@ -126,12 +141,6 @@ def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
     if allow_debugging and fp is not None:
         dbg_capture_msg_structures(msg,sample_body,fp)
         print(msg.get_boundary())
-    if "Content-Transfer-Encoding" in sample_body.keys():
-        encoding = sample_body['Content-Transfer-Encoding']
-        do_decode = encoding in ("base64","quoted-printable")
-    else:
-        encoding = None
-        do_decode = False
     charset = sample_body.get('Content-Type'," charset=\"utf-8-sig\"").split("charset=")[-1].split(';')[0].strip("\"").lower()
     sample_body = sample_body.get_payload(decode=True)
     if isinstance(sample_body,bytes):
@@ -139,10 +148,11 @@ def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
         sample_body = sample_body.decode(charset).encode("unicode_escape").decode("unicode_escape")
     else:
         sample_body = sample_body.encode("unicode_escape").decode("unicode_escape")
-    # sample_body = sample_body.replace("=92","'")
-    # unichr = re_uni_chr.sub(lambda m: chr(int(m.group(1), 16)), sample_body)
-    # sample_body = unichr
-    sample_body = numba_str_replace(sample_body)
+    sample_body = sample_body.replace("=92","'").replace(u"\u2019","'").replace(u"\u2018","'").replace(u"\u2014","--").replace(u"\ufeff","")
+    links = re_url_capture.search(sample_body)
+    # print(f"{msg['Subject']}\n\t{links=}")
+    sample_body = re_url_capture.sub("\2",sample_body)
+    sample_body = re_start_of_text_unicode.sub("",sample_body)
     header_matches = re_abstract_header_block.search(sample_body)
     end = -1
     while header_matches:
@@ -167,6 +177,23 @@ def plain_body_extraction(msg:EmailMessage, body_structure, header,fp=None):
     return sample_body
 
 
+def parallel_msg_extraction_loop(path,body_structs,cached_roots_dir,message_root_map):
+    path = Path(path)
+    key = path.name
+    key = key[:key.rfind(".")]
+    with open(path, "rb") as f:
+        msg_dict = un_pickle(f)  # type: dict
+    msg: EmailMessage
+    msg, body_structure, header = msg_dict["EmailMessage"], msg_dict["body_structure"], msg_dict["header"]
+    body_structs[msg["Subject"]] = body_structure
+    body = plain_body_extraction(msg, body_structure, header)
+    path = cached_roots_dir.joinpath(path.name)
+    message_root_map[key] = path
+    # modified_body = " ".join((word.replace("'re", " are").replace("'m", " am") for word in body.split(" ")))
+    with open(path, "wb") as pkl_f:
+        do_pickle({"header": header, "body": body}, pkl_f)
+
+
 def extract_root_messages(targets:list, file_dep:list):
     """
 
@@ -181,21 +208,10 @@ def extract_root_messages(targets:list, file_dep:list):
     message_root_map = {}
     nltk_package_path = file_dep.pop(0)
     body_structs = {}
-    for path in file_dep:
-        path = Path(path)
-        key = path.name
-        key = key[:key.rfind(".")]
-        with open(path, "rb") as f:
-            msg_dict = un_pickle(f) # type: dict
-        msg:EmailMessage
-        msg, body_structure, header = msg_dict["EmailMessage"], msg_dict["body_structure"],msg_dict["header"]
-        body_structs[msg["Subject"]] = body_structure
-        body = plain_body_extraction(msg,body_structure,header)
-        path = cached_roots_dir.joinpath(path.name)
-        message_root_map[key] = path
-        # modified_body = " ".join((word.replace("'re", " are").replace("'m", " am") for word in body.split(" ")))
-        with open(path,"wb") as pkl_f:
-            do_pickle({"header":header,"body":body},pkl_f)
+    with cf.ThreadPoolExecutor() as tpe:
+        ftrs = [tpe.submit(parallel_msg_extraction_loop,path,body_structs,cached_roots_dir,message_root_map) for path in file_dep]
+        # ftrs = [parallel_msg_extraction_loop(path,body_structs,cached_roots_dir,message_root_map) for path in file_dep]
+        cf.wait(ftrs)
     cached_roots_path = cached_roots_dir.joinpath(message_roots_map_fname)
     with open(cached_roots_path,"wb") as f:
         do_pickle(message_root_map,f)
@@ -204,39 +220,39 @@ def extract_root_messages(targets:list, file_dep:list):
 def extract_keywords(targets:list, file_dep:list)->tuple:
     lemmatizer_ref = WordNetLemmatizer()
     # stopwords_set = set(stopwords.words("english"))
-    # stopwords_set = {"the","be","to","a"}
-    stopwords_set = {}
+    stopwords_set = {"the","be","to","a"}
+    # stopwords_set = {}
     # excluded_punctuation = string.punctuation
     excluded_punctuation = ".,"
     keyword_extraction_path = Path(targets[0])
     keyword_extraction_path.mkdir(parents=True,exist_ok=True)
-    message_bodies = [[],[],[],[]]
+    message_bodies = [[],[[],[]],[[],[]],[]]
+    tagged_sentences = []
+    extractors = []
     for path in file_dep[1:]:
         path = Path(path)
         with open(path,"rb") as f:
             d = un_pickle(f)
-            s = d["body"]
+            body_text = d["body"]
             header = d["header"]
-        if s:
-            tokenized = list(filter(lambda token: token not in excluded_punctuation and token.lower() not in stopwords_set,word_tokenize(s,"english",preserve_line=False)))
-            for i in range(len(tokenized)-1,0,-1):
-                if len(tokenized[i])>30:# and "/" not in tokenized[i]:
-                    tokenized.pop(i)
-                elif "'" in tokenized[i]:
-                    tokenized[i-1] += tokenized.pop(i).replace("'","__")
-            widest = max((len(w) for w in tokenized if "/" not in w))
-            if widest>30:
-                print(f"skipping file at: {path}\n\twidest word: {max(tokenized,key=lambda w:len(w) if '/' not in w else 0)}\n\n")
-                continue
-            lemma = [lemmatizer_ref.lemmatize(word,pos=wordnet.VERB) for word in tokenized]
-            message_bodies[0].append(s)
-            message_bodies[1].append(" ".join(lemma))
-            message_bodies[2].append(lemma)
+        # tagged_sentences.append(sent_tags)
+        if body_text:
+            keyword_extractor = KeywordExtractor(body_text,excluded_punctuation,stopwords_set,lemmatizer_ref)
+            extractors.append(keyword_extractor)
+            message_bodies[0].append(body_text)
+            message_bodies[1][0].append(keyword_extractor.do_join("lemma", " ", ("_^_", "'")))
+            message_bodies[1][1].append(keyword_extractor.lemma)
+            message_bodies[2][0].append(keyword_extractor.do_join("stopped_lemma", " ", ("_^_", "'")))
+            message_bodies[2][1].append(keyword_extractor.stopped_lemma)
             message_bodies[3].append(f"Subject: '{header['Subject']}'")
         else:
-            print(f"for the following path, the body text string was empty:\n\t{path=}\n\t{header['Subject']=}\n\t{s=}")
+            print(f"for the following path, the body text string was empty:\n\t{path=}\n\t{header['Subject']=}\n\t{body_text=}")
+
+    with open("keyword_exctractors.json","w") as ext_f:
+        json.dump([ext.to_json(4) for ext in extractors],ext_f,indent=4)
     # with open()
-    _keyword_extraction_helper(message_bodies)
+    _keyword_extraction_helper(message_bodies,keyword_extraction_path)
+
 
 def _count_vectorization(data, fd=stdout)->tuple:
     count_vectorizer = CountVectorizer(token_pattern=r"(?u:\b\w\w+\b)")
@@ -262,20 +278,23 @@ def _tf_idf_vectorization(data, fd=stdout)->tuple:
     return values,feature_names
 
 
-def _keyword_extraction_helper(message_bodies):
-    import json
+def _keyword_extraction_helper(message_bodies:list, path_root:Path):
     with open("quick_bodies_inspection.json","w") as f:
         json.dump(message_bodies,f,indent=4)
     with open("count_vectorization_output.txt","w") as cv_f:
-        word_bag = _count_vectorization(message_bodies[1], cv_f)
-        # for msg_data,name in zip(message_bodies[1],message_bodies[3]):
-        #     word_bag.append((name,_count_vectorization(msg_data, cv_f)))
+        word_bag = _count_vectorization(message_bodies[1][0], cv_f)
     with open("tf_idf_vectorization_output.txt","w") as tfidf_f:
-        tf_idf = _tf_idf_vectorization(message_bodies[1], tfidf_f)
-    # plotting_do_pandas_inspection(word_bag, tf_idf, message_bodies[3])
+        tf_idf = _tf_idf_vectorization(message_bodies[1][0], tfidf_f)
+    with open("count_vectorization_output_stopped.txt","w") as cv_f:
+        word_bag_stopped = _count_vectorization(message_bodies[2][0], cv_f)
+    with open("tf_idf_vectorization_output_stopped.txt","w") as tfidf_f:
+        tf_idf_stopped = _tf_idf_vectorization(message_bodies[2][0], tfidf_f)
+    # print("now to show figures")
+    # plotting_do_pandas_inspection(word_bag, tf_idf, message_bodies[3], "with stop-words")
+    plotting_do_pandas_inspection(word_bag_stopped, tf_idf_stopped, message_bodies[3], "without stop-words",path_root)
 
 
-def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list):
+def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list, context_str:str, out_path:Path):
     # import plotly.express as px
     pd.options.display.max_columns = 20
     pd.options.display.width = 400
@@ -285,8 +304,8 @@ def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list):
         df = pd.DataFrame(word_bag[0].T.toarray(), index=word_bag[1])
         # add_stats_columns(df)
         df = df.rename(columns={i: headers[i] for i in range(len(headers))},
-                             index={k: k.replace("__", "'") for k in df.index},
-                             errors="raise")
+                       index={k: k.replace("__", "'") for k in df.index},
+                       errors="raise")
         df.insert(len(df.columns), "All Documents", df.max(axis=1))
         sortable_map = {k: df.loc[k, "All Documents"] for k in df.index}
         df.sort_index(axis=0, inplace=True, key=lambda x: [sortable_map[i] for i in x])
@@ -343,14 +362,14 @@ def plotting_do_pandas_inspection(word_bag, tf_idf, headers:list):
         return fig
 
     wb_df,wb_normed = build_count_dataframe()
+    wb_df.to_csv(out_path.joinpath("raw_word_count_matrix.csv"))
     fig1 = build_figure(wb_normed,
-                        "Word count as ratios on range [0,1]",
+                        f"{context_str} Word count as ratios on range [0,1]",
                         'Unique words found in documents',
                         'Word count as ratio of (unique_word / sum(all_words))')
+    fig1.show()
     fig2 = build_figure(wb_df,
-                        'Raw word counts',
+                        f"{context_str} Raw word counts",
                         'Unique words found in documents',
                         'Raw word counts')
-    print("now to show figures")
-    fig1.show()
     fig2.show()

@@ -1,10 +1,19 @@
-from src.email_caching.downloader import doit_email_downloader
-from src.keyword_extraction.extraction_functions import extract_root_messages,extract_keywords
-from src.keyword_extraction.extraction_functions import message_roots_cache_dir, message_roots_map_fname
-from src.keyword_extraction.extraction_functions import output_target_files
-from src.pathing_defs import cache_folder
 import gc, pickle
-from src.__main__ import main
+try:
+    from src.email_caching.downloader import doit_email_downloader
+    from src.keyword_extraction.extraction_functions import extract_root_messages,extract_keywords
+    from src.keyword_extraction.extraction_functions import message_roots_cache_dir, message_roots_map_fname
+    from src.keyword_extraction.extraction_functions import output_target_files
+    from src.pathing_defs import cache_folder
+    from src.__main__ import main
+except ModuleNotFoundError:
+    from .email_caching.downloader import doit_email_downloader
+    from .keyword_extraction.extraction_functions import extract_root_messages,extract_keywords
+    from .keyword_extraction.extraction_functions import message_roots_cache_dir, message_roots_map_fname
+    from .keyword_extraction.extraction_functions import output_target_files
+    from .pathing_defs import cache_folder
+    from .__main__ import main
+
 
 extraction_targets = []
 
@@ -59,22 +68,17 @@ def task_categorize_emails():
     return dict(actions=lambda *args:args, file_dep=["load_analysis_tools_dummy_file.txt"], targets=["categorize_emails_dummy_file.txt"])
 
 
-def emulate_doit(doit_d:dict):
-    actions = doit_d.pop("actions")
-    verbosity = doit_d.pop("verbosity",None)
-    for func_a in actions:
-        func_a(**doit_d)
 
 
-if __name__ == '__main__':
-    do_doit = False
-    if do_doit:
-        main()
-    else:
-        tasks = []
-        # tasks.append(task_download_emails)
-        tasks.append(task_extract_root_message)
-        tasks.append(task_extract_keywords)
-
-        for task in tasks:
-            emulate_doit(task())
+# if __name__ == '__main__':
+#     do_doit = False
+#     if do_doit:
+#         main()
+#     else:
+#         tasks = []
+#         tasks.append(task_download_emails)
+#         tasks.append(task_extract_root_message)
+#         tasks.append(task_extract_keywords)
+#
+#         for task in tasks:
+#             emulate_doit(task())
