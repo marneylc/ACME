@@ -11,7 +11,7 @@ This is a very crude but quick band-aid fix that allowed the project to programm
 
 1) A a result of the somewhat sloppy process by which the code was included in this project, the following files saw changes to how they performed relative imports from other `eralchemy` project files.
    ```python
-   ~\email_classifier\src\eralchemy\main.py
+   ~\EmailClassification\src\eralchemy\main.py
        line number: 9;                          from eralchemy.version import version as __version__
                             changed to:         from src.eralchemy.version import version as __version__
    
@@ -28,15 +28,15 @@ This is a very crude but quick band-aid fix that allowed the project to programm
                             changed to:         from src.eralchemy.parser import markdown_file_to_intermediary, line_iterator_to_intermediary, ParsingException
    
    
-   ~\email_classifier\src\eralchemy\models.py
+   ~\EmailClassification\src\eralchemy\models.py
        line number: 1;                          from eralchemy.cst import TABLE, FONT_TAGS, ROW_TAGS
                             changed to:         from src.eralchemy.cst import TABLE, FONT_TAGS, ROW_TAGS
    
-   ~\email_classifier\src\eralchemy\parser.py
+   ~\EmailClassification\src\eralchemy\parser.py
        line number: 1;                          from eralchemy.models import Table, Relation, Column
                             changed to:         from src.eralchemy.models import Table, Relation, Column
    
-   ~\email_classifier\src\eralchemy\sqla.py
+   ~\EmailClassification\src\eralchemy\sqla.py
        line number: 5;                          from eralchemy.models import Relation, Column, Table  
                             changed to:         from src.eralchemy.models import Relation, Column, Table
    
@@ -44,7 +44,7 @@ This is a very crude but quick band-aid fix that allowed the project to programm
 2) `Eralchemy` is built to operate with both conventional `Sqlite` database objects and special OOP generated relational databases built from the `sqlalchemy` python package. 
    
    As such, there have been changes introduced in the past 3 years to `sqlalchemy` which broke certain interactions with `eralchemy`. The fixes for those follow:
-   1) In the file, `~\email_classifier\src\eralchemy\sqla.py` starting on line number 46;
+   1) In the file, `~\EmailClassification\src\eralchemy\sqla.py` starting on line number 46;
    ```python
    # original version:
    # This implementation broke because one of the base classes to the table object,
