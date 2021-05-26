@@ -1,0 +1,16 @@
+Meeting with Luke 5-20-21
+
+combine/condense outline slide with project objectives slide and existing competitors
+for outline:
+	call out how many sections there are 
+
+for objectives:
+	call out specific sponsor-driven reqs
+		-Open sourced: makes custom solutions to unique problems viable
+		-CLI: minimal interaction with code at runtime for easy execution and programmatic launching.
+		-security minded: minimize interactions with extra-network entities to reduce potential for man-in-the-middle attacks.
+		-User should be able to study inbox
+		-Human centric interactions require being able to respond to abstract requests in a context specific and friendly manner.
+
+Project Breakdown slide:
+	duplicate slide and then add red box around the section I worked on

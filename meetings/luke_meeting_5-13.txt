@@ -1,0 +1,9 @@
+backlog:
+
+	* ~~finish db pipeline.~~
+	* ~~convert pickles to json.~~
+	* prep for practice presentation to Luke.
+	* revise presentation and prepare second draft of presentation for Bill.
+	* look into pushing DB to remote url host.
+	* look into blast: https://github.com/mosuka/blast  -- looks super cool!
+	* look into curl for data extraction.
