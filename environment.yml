@@ -1,23 +1,25 @@
-name: email_classifier2
+name: email_classifier
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - pip
   - python
+  - pip
   - nltk
-  - numba
-  - numpy
+  - jsonpickle
   - doit
-  - beautifulsoup4
-  - scikit-learn
+  - numpy
+  - numba
   - pandas
   - plotly
-  # - dash
-  # - dash-bootstrap-components
-  - jsonpickle
-  - google-api-python-client
-  - google-auth-httplib2
-  - google-auth-oauthlib
   - sqlalchemy
+  - beautifulsoup4
+  - scikit-learn
   - graphviz
+  - pygraphviz
+  - pytest
+  - psycopg2
+#  - python-graphviz
+#  - google-auth-oauthlib
+#  - google-api-python-client
+#  - google-auth-httplib2
