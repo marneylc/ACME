@@ -1,20 +1,37 @@
-import sys
-try:
-    # Pycharm IDE specific implementation detail
-    # This is only needed in order to detect if we launched into debug mode from the Pycharm IDE
-    import pydevd
-    DEBUGGING = True
-except ImportError:
-    # Not running from inside the Pycharm IDE, so let's check if the code was called
-    # from a terminal with the `-d` system flag
-    DEBUGGING = sys.flags.debug == 1  # note that sys.flags is a namedtuple object
 
-from typing import Union
+"""
+This is a general purpose utility file for setting up logger output that's good for
+quick visual scans of a program's diagnostic data.
+"""
+
+# builtin imports
+import sys
+from sys import stdout as SYS_STDOUT
+from typing import Optional,Union
 import logging
+import inspect
 from logging import Formatter
 from src.pathing_defs import project_root_folder
 from datetime import datetime as dt
 from pathlib import Path
+
+########################################################################################################################
+# Determining if we are running in debug mode, then set the global variable DEBUGGING accordingly.
+#
+# DEBUGGING should now be imported to the project's root __init__.py file for consistent
+# access across the project
+########################################################################################################################
+try:
+    # Pycharm IDE specific implementation detail
+    # This detects if we launched into debug mode using the Pycharm IDE
+    import pydevd
+    DEBUGGING = True
+except ImportError:
+    # Pycharm debugger isn't running, so let's check if the code was called
+    # from a terminal with the `-d` flag set (`-d` tells python interpreter to run in debug mode)
+    DEBUGGING = sys.flags.debug == 1  # note that sys.flags is a namedtuple object
+
+
 # the following "table" of _data was taken from the official python docs for
 # python version 3.6.8 on May 5, 2019
 # found here: https://docs.python.org/3.6/library/logging.html
@@ -166,21 +183,62 @@ logging_target_files = {
     }
 }
 
-def _build_default_formatter(level:int,child_name:str,colr_id:int)->logging.Formatter:
+
+class CallStackFormatter(logging.Formatter):
+    """
+    This custom formatter class was taken directly from:
+        https://stackoverflow.com/q/54747730/7412747
+    """
+
+    def formatStack(self, _ = None) -> str:
+        stack = inspect.stack()[::-1]
+        stack_names = (inspect.getmodulename(stack[0].filename),
+                       *(frame.function
+                         for frame
+                         in stack[1:-9]))
+        return '::'.join(stack_names)
+
+    def format(self, record):
+        record.message = record.getMessage()
+        record.stack_info = self.formatStack()
+        if self.usesTime():
+            record.asctime = self.formatTime(record, self.datefmt)
+        s = self.formatMessage(record)
+        if record.exc_info:
+            # Cache the traceback text to avoid converting it multiple times
+            # (it's constant anyway)
+            if not record.exc_text:
+                record.exc_text = self.formatException(record.exc_info)
+        if record.exc_text:
+            if s[-1:] != "\n":
+                s = s + "\n"
+            s = s + record.exc_text
+        return s
+
+
+def _build_default_formatter(level:int,child_name:str,colr_id:int, formatter_class=logging.Formatter)->Union[logging.Formatter, CallStackFormatter]:
+    if formatter_class is None:
+        formatter_class = logging.Formatter
+    if isinstance(formatter_class,CallStackFormatter):
+        stack_info = "\n\t[ %(levelname)-5s ] [ %(stack_info)s ]"
+    else:
+        stack_info = ""
     if level < logging.WARNING:  # logging.WARNING == 30
-        formatter = Formatter(
+        formatter = formatter_class(
             "{header}%(asctime)s - {} - %(module)s.%(funcName)s(...) - %(lineno)d:{reset}{msg_style}"
-            "\n\t%(message)s{reset}\n".format(
+            "{}\n\t%(message)s{reset}\n".format(
                 child_name.capitalize(),
+                stack_info,
                 header=LOW_PRI_LOGGER_HEADER_COLOR_PREFIX.format(colr_id),
                 msg_style=LOGGER_MSG_COLOR.format(colr_id),
                 reset=RESET),
             "%H:%M:%S")
     else:
-        formatter = Formatter(
+        formatter = formatter_class(
             "{header}%(asctime)s - {} - %(module)s.%(funcName)s(...) - %(lineno)d:{reset}{msg_style}"
-            " ::> %(message)s{reset}".format(
+            " ::> %(message)s{}{reset}".format(
                 child_name.capitalize(),
+                stack_info,
                 header=LOW_PRI_LOGGER_HEADER_COLOR_PREFIX.format(colr_id),
                 msg_style=LOGGER_MSG_COLOR.format(colr_id),
                 reset=RESET),
@@ -189,7 +247,7 @@ def _build_default_formatter(level:int,child_name:str,colr_id:int)->logging.Form
 
 
 def _configure_handler(formatter:logging.Formatter, level:int,handler_delegate,handler_kwargs:dict)->logging.Handler:
-    handler_kwargs.setdefault("stream", sys.stdout)
+    handler_kwargs.setdefault("stream", SYS_STDOUT)
     handler = handler_delegate(**handler_kwargs)
     handler.setLevel(level)
     handler.setFormatter(formatter)
@@ -296,7 +354,7 @@ def _logger_setup(logger: logging.Logger,
             colr_id = log_id_map["NOTSET"]
         log_id_map[level_normalized] = colr_id
     if formatter is None:
-        formatter = _build_default_formatter(level,header_label,colr_id)
+        formatter = _build_default_formatter(level,header_label,colr_id,formatter)
     logger.addHandler(_configure_handler(formatter,level,handler_delegate,handler_kwargs))
     return logger
 
@@ -304,11 +362,18 @@ def _logger_setup(logger: logging.Logger,
 def get_logger(root_name: str,
                child_name: str = None,
                header_label: str = None,
-               formatter: Formatter = None,
+               formatter: Union[Formatter,str] = None,
                level: Union[int, str] = None,
-               logger_registration_dict: dict = LOGGER_COLLECTION,
+               logger_registration_dict: dict = None,
                handler_delegate=logging.StreamHandler,
-               do_file_output:bool=False, **handler_kwargs)->logging.Logger:
+               do_file_output:bool=False,
+               **handler_kwargs)->logging.Logger:
+    global LOGGER_COLLECTION
+    if logger_registration_dict is None:
+        logger_registration_dict = LOGGER_COLLECTION
+    if isinstance(formatter,str):
+        if "stack" in formatter.lower():
+            formatter = CallStackFormatter
     level = level if level is not None else (logging.DEBUG if DEBUGGING else logging.NOTSET)
     if isinstance(level, str):
         level = LEVELS_STR2INT.get(level.upper(), logging.NOTSET)
@@ -461,10 +526,10 @@ LOGGER_COLLECTION.pop(_logger_setup_internal_warning_logger.name,None)
 _logger_setup_internal_warning_logger = _logger_setup_internal_warning_logger.warning
 
 
-project_root = project_root_folder.name # gets the name of the project's root directory
-
-import_warnings_logger = get_logger(project_root,"import warnings",level="WARNING").warning
-root_info_logger = get_logger(project_root,"INFO log",level="INFO")
+# project_root = project_root_folder.name # gets the name of the project's root directory
+project_root = "EmailClassifier" # gets the name of the project's root directory
+import_warnings_logger = get_logger(project_root,__name__+": import warnings",level="WARNING").warning
+root_info_logger = get_logger(project_root,__name__+": INFO log",level="INFO")
 
 # third party logging supression
 if DEBUGGING:

@@ -104,6 +104,7 @@ setup(
         # checked by 'pip install'. See instead 'python_requires' below.
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3 :: Only',
     ],
     # This field adds keywords for your project which will appear on the
@@ -112,7 +113,7 @@ setup(
     # Note that this is a list of additional keywords, separated
     # by commas, to be used to assist searching for the distribution in a
     # larger catalog.
-    keywords=["classifier","email","keyword classification"],  # Optional
+    keywords=["automated organization","email caching","sqlite database"],  # Optional
 
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
@@ -144,12 +145,14 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    # install_requires=[
-    #     "numpy",
-    #     "numba",
-    #     "doit",
-    #     "nltk",
-    # ],  # Optional
+    install_requires=[
+        "numpy",
+        "numba",
+        "doit",
+        "nltk",
+        "sqlalchemy",
+        "pygraphviz"
+    ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
@@ -186,8 +189,7 @@ setup(
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional
         'console_scripts': [
-            ["email_download=src.email_caching.downloader:email_downloader"],
-            ["email_classifier=src.__main__:main",]
+            "collect_email=src.__main__:main",
         ],
     },
 
