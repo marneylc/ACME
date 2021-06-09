@@ -51,7 +51,7 @@ def pickle_dump(obj,path,mode="wb",/, protocol=-1):
         mode += "b"
     if isinstance(path,Path):
         path.parent.mkdir(parents=True,exist_ok=True)
-        path.with_suffix(".pkl")
+        path = path.with_suffix(".pkl")
     with open(path, mode) as f:
         return do_pickle(obj,f,protocol)
 
@@ -110,10 +110,11 @@ def email_downloader(cache_root=None)->None:
         #   within some limited number of attempts.
         bad_practice = "oferoyrtvimlhqdd"
         imap_url = "imap.gmail.com"
-        emails_dir = cache_location.parent.joinpath("emails")
-        emails_dir.mkdir(parents=True,exist_ok=True)
+        # emails_dir = cache_location.parent.joinpath("emails")
+        # emails_dir.mkdir(parents=True,exist_ok=True)
         bytes_parser = BytesParser(policy=policy_default)
-        db_name = emails_dir.joinpath(DB_PATH_DICT["email"])
+        db_name = DB_PATH_DICT["email"]
+        db_name.parent.mkdir(parents=True,exist_ok=True)
         email_table_name: List[str] = TABLE_NAMES["email"]
         db = EmailDB(db_name, email_table_name)
         with db("main"):

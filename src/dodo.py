@@ -60,12 +60,16 @@ def task_generate_db_erd():
     output_target = cache_folder.joinpath("db_diagrams")
     output_target.mkdir(parents=True,exist_ok=True)
     file_dep = [output_target.joinpath(name) for name in output_target.iterdir() if name.suffix==".er"]
-    # targets = [str(output_target.joinpath("central_db.png")), str(output_target.joinpath("central_db.er"))]
-    targets = [str(p.with_name(p.stem+".png")) for p in file_dep]
-    file_dep = [str(p) for p in file_dep]
-    # file_dep = [str(DB_PATH_DICT["consolidated"])]
-    # file_dep = list(map(str,(DB_PATH_DICT[k] for k in ("email","body","lemma"))))
-    # targets = [str(DB_PATH_DICT["consolidated"])]
+    if not file_dep:
+        file_dep = list(map(str,(DB_PATH_DICT[k] for k in ("email","body","lemma","consolidated"))))
+        targets = list(map(str,(DB_PATH_DICT[k].parent.joinpath("db_diagrams").joinpath(DB_PATH_DICT[k].name).with_suffix(".er") for k in ("email","body","lemma","consolidated"))))
+        file_dep.extend(targets)
+        _targets = tuple(map(lambda p:str(Path(p).with_suffix(".png")),targets))
+        targets.extend(_targets)
+        dbg_break = 0
+    else:
+        targets = list(map(lambda p:str(p.with_suffix(".png")),file_dep))
+        file_dep = [str(p) for p in file_dep]
     return dict(actions=actions,file_dep=file_dep,targets=targets,verbosity=2)
 
 # def task_load_analysis_tools():

@@ -23,12 +23,11 @@ if __name__ == '__main__':
         from src.dodo import task_generate_db_erd
         proj_base_info_logger.warning("EmailClassifier launched")
         tasks = []
-        # tasks.append(task_download_emails)
-        # tasks.append(task_extract_root_message)
-        # tasks.append(task_extract_lemma)
-        # tasks.append(task_consolidate_databases)
+        tasks.append(task_download_emails)
+        tasks.append(task_extract_root_message)
+        tasks.append(task_extract_lemma)
+        tasks.append(task_consolidate_databases)
         tasks.append(task_generate_db_erd)
-
         for task in tasks:
             emulate_doit(task())
         proj_base_info_logger.warning("EmailClassifier completed")

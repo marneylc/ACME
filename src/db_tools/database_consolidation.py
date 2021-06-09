@@ -6,7 +6,9 @@ from src import TABLE_NAMES
 from src.eralchemy.main import render_er
 from src.utils.custom_logger import get_logger
 
+
 info_logger = get_logger("EmailClassifier",__name__+".consolidation_logger",level="INFO")
+
 
 def doit_consolidate_databases(targets:List[str], file_dep:List[str]):
     consolidate_databases(Path(targets[0]), {p.stem:p for p in (Path(f) for f in file_dep)})
@@ -93,16 +95,15 @@ on all_tables_by_id(id);
 
 
 def doit_generate_erd(targets:List[str], file_dep:List[str])->None:
-        targets = [str(Path(t).resolve()) for t in targets]
-        for t,d in zip(targets,file_dep):
-
-            dep = Path(d).resolve()
-            if dep.suffix==".db":
-                db_path = f"sqlite+pysqlite:///{dep}"
-            else:
-                db_path = str(dep)
-            print(dep)
-            render_er(db_path,[t])
+    targets = [str(Path(t).resolve()) for t in targets]
+    for t,d in zip(targets,file_dep):
+        dep = Path(d).resolve()
+        if dep.suffix==".db":
+            db_path = f"sqlite+pysqlite:///{dep}"
+        else:
+            db_path = str(dep)
+        info_logger.info(dep)
+        render_er(db_path,[t])
 
 
 if __name__ == '__main__':
