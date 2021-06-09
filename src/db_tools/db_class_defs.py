@@ -242,8 +242,6 @@ class DBBase:
                         curs.close()
             main_con.commit()
 
-
-
     def commit(self) -> None:
         """Call con.commit() for all active connections that has yet uncommitted changes.
 

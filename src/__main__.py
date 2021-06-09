@@ -1,4 +1,4 @@
-from src.utils.__main__ import *
+from utils.__main__ import *
 
 
 def emulate_doit(doit_d:dict):
