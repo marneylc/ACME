@@ -106,3 +106,5 @@ if __name__ == '__main__':
     _target.mkdir(parents=True,exist_ok=True)
     consolidate_databases(DB_PATH_DICT["consolidated"], {p.stem:p for p in DB_PATH_DICT.values() if "consolidated" not in p.stem})
     doit_generate_erd([str(_target.joinpath("central_db.png")),str(_target.joinpath("central_db.er"))], [str(DB_PATH_DICT["consolidated"])])
+    for target_label in ("email","body","lemma"):
+        doit_generate_erd([str(_target.joinpath(f"{target_label}_db.png")), str(_target.joinpath(f"{target_label}_db.er"))],[str(DB_PATH_DICT[target_label])])

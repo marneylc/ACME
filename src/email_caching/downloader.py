@@ -10,11 +10,10 @@ from email.parser import BytesParser
 from email.policy import default as policy_default
 from typing import List
 import concurrent.futures as cf
-from collections import deque
 
 # custom code imports
-from src.custom_logger import get_logger
-from src.pathing_defs import cache_folder
+from src.utils.custom_logger import get_logger
+from src.utils.pathing_defs import cache_folder
 from src import do_pickle, undo_pickle, DB_PATH_DICT, TABLE_NAMES
 from src.email_caching.cache_class_defs import EmailItem, EmailDB
 

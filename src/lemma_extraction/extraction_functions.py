@@ -34,7 +34,7 @@ from src.lemma_extraction.cache_class_defs import LemmaDB, lemma_table_row
 from src.lemma_extraction import CustomRegex
 from src.lemma_extraction.debugging_tools import allow_debugging,dbg_capture_msg_structures
 from src.lemma_extraction.word_extraction_classes import LemmaExtractor
-from src.custom_logger import get_logger, CallStackFormatter
+from src.utils.custom_logger import get_logger, CallStackFormatter
 
 # creating global namespace variables
 info = get_logger("EmailClassifier",__name__+": lemma extraction status",level="INFO")

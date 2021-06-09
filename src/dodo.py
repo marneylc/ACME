@@ -1,12 +1,10 @@
 from pathlib import Path
 from src.email_caching.downloader import doit_email_downloader
 from src.lemma_extraction.extraction_functions import extract_root_messages,extract_lemma
-from src.lemma_extraction.extraction_functions import message_roots_cache_dir, message_roots_map_fname
 from src.db_tools.database_consolidation import doit_consolidate_databases
 # from src.lemma_extraction import output_target_files
-from src.pathing_defs import cache_folder
-from src.__main__ import main
-from src import do_pickle, undo_pickle, DB_PATH_DICT
+from src.utils.pathing_defs import cache_folder
+from src import DB_PATH_DICT
 
 
 # extraction_targets = []
