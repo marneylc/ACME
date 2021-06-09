@@ -34,28 +34,14 @@ class NoCurrentTableException(ParsingException):
     hint = 'Try to declare the tables before the relationships and columns.'
 
 
+class ERAlchemyLineParseError(ParsingException):
+    pass
+
+
 def remove_comments_from_line(line):
     if '#' not in line:
         return line.strip()
     return line[:line.index('#')].strip()
-
-
-def filter_lines_from_comments(lines):
-    """ Filter the lines from comments and non code lines. """
-    for line_nb, raw_line in enumerate(lines):
-        clean_line = remove_comments_from_line(raw_line)
-        if clean_line == '':
-            continue
-        yield line_nb, clean_line, raw_line
-
-
-def parse_line(line):
-    for typ in [Table, Relation, Column]:
-        match = typ.RE.match(line)
-        if match:
-            return typ.make_from_match(match)
-    msg = 'Line "{}" could not be parsed to an object.'
-    raise ValueError(msg.format(line))
 
 
 def _check_no_current_table(new_obj, current_table):
@@ -83,7 +69,7 @@ def _check_colname_in_lst(column_name, columns_names):
         raise RelationNoColException(msg.format(column_name))
 
 
-def _check_not_creating_duplicates(new_name, names, type, exc):
+def _check_not_creating_duplicates(new_name,names, type, exc):
     if new_name in names:
         msg = 'Cannot add {} named "{}" which is ' \
               'already present in the schema.'
@@ -96,12 +82,11 @@ def update_models(new_obj, current_table, tables, relations):
     _check_no_current_table(new_obj, current_table)
 
     if isinstance(new_obj, Table):
-        tables_names = [t.name for t in tables]
-        _check_not_creating_duplicates(new_obj.name, tables_names, 'table', DuplicateTableException)
+        _check_not_creating_duplicates(new_obj.name, (t.name for t in tables), 'table', DuplicateTableException)
         return new_obj, tables + [new_obj], relations
 
     if isinstance(new_obj, Relation):
-        tables_names = [t.name for t in tables]
+        tables_names = tuple(t.name for t in tables)
         _check_colname_in_lst(new_obj.right_col, tables_names)
         _check_colname_in_lst(new_obj.left_col, tables_names)
         return current_table, tables, relations + [new_obj]
@@ -125,13 +110,28 @@ def markdown_file_to_intermediary(filename):
 
 def line_iterator_to_intermediary(line_iterator):
     """ Parse an iterator of str (one string per line) to the intermediary syntax"""
+    def parse_line():
+        for typ in [Table, Relation, Column]:
+            match = typ.RE.match(line)
+            if match:
+                return typ.make_from_match(match)
+        msg = f'Line "{line}" could not be parsed to an object.'
+        raise ERAlchemyLineParseError(msg)
+
+    def filter_lines_from_comments():
+        """ Filter the lines from comments and non code lines. """
+        for line_nb, raw_line in enumerate(line_iterator):
+            clean_line = remove_comments_from_line(raw_line)
+            if clean_line:
+                yield line_nb, clean_line, raw_line
+
     current_table = None
     tables = []
     relations = []
     errors = []
-    for line_nb, line, raw_line in filter_lines_from_comments(line_iterator):
+    for line_nb, line, raw_line in filter_lines_from_comments():
         try:
-            new_obj = parse_line(line)
+            new_obj = parse_line()
             current_table, tables, relations = update_models(new_obj, current_table, tables, relations)
         except ParsingException as e:
             e.line_nb = line_nb

@@ -10,11 +10,10 @@ from email.parser import BytesParser
 from email.policy import default as policy_default
 from typing import List
 import concurrent.futures as cf
-from collections import deque
 
 # custom code imports
-from src.custom_logger import get_logger
-from src.pathing_defs import cache_folder
+from src.utils.custom_logger import get_logger
+from src.utils.pathing_defs import cache_folder
 from src import do_pickle, undo_pickle, DB_PATH_DICT, TABLE_NAMES
 from src.email_caching.cache_class_defs import EmailItem, EmailDB
 
@@ -22,7 +21,6 @@ body_structure_splitter = re.compile("\)\(")
 info = get_logger("EmailClassifier",__name__+": downloader status updates",level="INFO")
 err_log = get_logger("EmailClassifier",__name__+": downloader error messsage",level="ERROR")
 
-warnings.filterwarnings("ignore")
 
 # global references for strings mapping to imap content retrieval codes.
 # full_retrieval_code = "(RFC822)"
@@ -93,56 +91,56 @@ def email_downloader(cache_root=None)->None:
                     cache our downloaded emails.
     :return: None
     """
-    # ToDo: implement an argparse parser... >.< ...  to handle commandline interfacing.
-    if cache_root is None:
-        if len(sys.argv)>1:
-            cache_root = cache_folder.joinpath(str(sys.argv[1]))
+    # warnings.filterwarnings("ignore")
+    try:
+        # ToDo: implement an argparse parser... >.< ...  to handle commandline interfacing.
+        if cache_root is None:
+            if len(sys.argv)>1:
+                cache_root = cache_folder.joinpath(str(sys.argv[1]))
+            else:
+                cache_root = cache_folder.joinpath("cached_emails.pkl")
+        if not isinstance(cache_root,Path):
+            cache_location = Path(cache_root).resolve()
         else:
-            cache_root = cache_folder.joinpath("cached_emails.pkl")
-    if not isinstance(cache_root,Path):
-        cache_location = Path(cache_root).resolve()
-    else:
-        cache_location = cache_root
-    # info.setLevel(logging.WARNING)
-    info.info(f"Caching emails to:\n\t{cache_location}")
-    # print(f"Caching emails to:\n\t{cache_location}")
-    # header_keys = {}
-    # existing_data = pickle_load(cache_location)
-    # header_keys.update(existing_data)
-    target_email = "luke.email.ryan.here@gmail.com"
-    # ToDo: HIGH PRIORITY --
-    #   Instead of saving the password inside the file, we should required the user to enter the password correctly
-    #   within some limited number of attempts.
-    bad_practice = "oferoyrtvimlhqdd"
-    imap_url = "imap.gmail.com"
-    emails_dir = cache_location.parent.joinpath("emails")
-    emails_dir.mkdir(parents=True,exist_ok=True)
-    bytes_parser = BytesParser(policy=policy_default)
-    db_name = emails_dir.joinpath(DB_PATH_DICT["email"])
-    email_table_name: List[str] = TABLE_NAMES["email"]
-    db = EmailDB(db_name, email_table_name)
-    with db("main"):
-        main_curs, main_curs_pos = db.cursor
-        existing_keys = set(v[0] for v in main_curs.execute(f"SELECT id FROM {email_table_name[0]};").fetchall())
-        with imaplib.IMAP4_SSL(imap_url) as imap_con:
-            imap_con.login(target_email, bad_practice)
-            imap_con.select("INBOX")  # defaults to selecting "INBOX"
-            inbox_status = imap_con.status('INBOX', '(MESSAGES RECENT UIDNEXT UIDVALIDITY UNSEEN)')
-            info.info(f"{inbox_status=}")
-            # imap_con.search(None,"ALL") returns a tuple, with the first element being the condition of the data_ids.
-            _, data_ids = imap_con.search(None, "ALL")
-            # data = imap_con.search(None,"FROM","petersryan84@gmail.com")[1]
-            mails = (elem for d in data_ids for elem in d.split())
-        with cf.ThreadPoolExecutor() as tpe:
-            ftrs = [tpe.submit(_threadable_logic, imap_url, target_email, bad_practice, mail_id, bytes_parser, existing_keys)
-                    for mail_id in mails]
-            for ftr in cf.as_completed(ftrs):
-                if not ftr.exception():
-                    email_id,email_item = ftr.result()
-                    if email_item is not None:
-                        info.info(f"adding new row to db for email_id: {email_id}")
-                        db.add_row(db.table_names[0],"main",email_item=email_item)
-            db.commit()
+            cache_location = cache_root
+        info.info(f"Caching emails to:\n\t{cache_location}")
+        target_email = "luke.email.ryan.here@gmail.com"
+        # ToDo: HIGH PRIORITY --
+        #   Instead of saving the password inside the file, we should required the user to enter the password correctly
+        #   within some limited number of attempts.
+        bad_practice = "oferoyrtvimlhqdd"
+        imap_url = "imap.gmail.com"
+        emails_dir = cache_location.parent.joinpath("emails")
+        emails_dir.mkdir(parents=True,exist_ok=True)
+        bytes_parser = BytesParser(policy=policy_default)
+        db_name = emails_dir.joinpath(DB_PATH_DICT["email"])
+        email_table_name: List[str] = TABLE_NAMES["email"]
+        db = EmailDB(db_name, email_table_name)
+        with db("main"):
+            main_curs, main_curs_pos = db.cursor
+            existing_keys = set(v[0] for v in main_curs.execute(f"SELECT id FROM {email_table_name[0]};").fetchall())
+            with imaplib.IMAP4_SSL(imap_url) as imap_con:
+                imap_con.login(target_email, bad_practice)
+                imap_con.select("INBOX")  # defaults to selecting "INBOX"
+                inbox_status = imap_con.status('INBOX', '(MESSAGES RECENT UIDNEXT UIDVALIDITY UNSEEN)')
+                info.info(f"{inbox_status=}")
+                # imap_con.search(None,"ALL") returns a tuple, with the first element being the condition of the data_ids.
+                _, data_ids = imap_con.search(None, "ALL")
+                # data = imap_con.search(None,"FROM","petersryan84@gmail.com")[1]
+                mails = (elem for d in data_ids for elem in d.split())
+            with cf.ThreadPoolExecutor() as tpe:
+                ftrs = [tpe.submit(_threadable_logic, imap_url, target_email, bad_practice, mail_id, bytes_parser, existing_keys)
+                        for mail_id in mails]
+                for ftr in cf.as_completed(ftrs):
+                    if not ftr.exception():
+                        email_id,email_item = ftr.result()
+                        if email_item is not None:
+                            info.info(f"adding new row to db for email_id: {email_id}")
+                            db.add_row(db.table_names[0],"main",email_item=email_item)
+                db.commit()
+    finally:
+        pass
+        # warnings.resetwarnings()
 
 
 def doit_email_downloader(targets:list):

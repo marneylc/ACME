@@ -43,13 +43,23 @@ def column_to_intermediary(col, type_formatter=format_type):
     )
 
 
+# def table_to_intermediary(table):
+#     """Transform an SQLAlchemy Table object to it's intermediary representation. """
+#     return Table(
+#         name=table.fullname,
+#         columns=[column_to_intermediary(col)
+#                  for col in (table.c._data.values()
+#                              if hasattr(table.c,"_data") else table.c._colset)]
+#     )
+
+
 def table_to_intermediary(table):
     """Transform an SQLAlchemy Table object to it's intermediary representation. """
     return Table(
         name=table.fullname,
-        columns=[column_to_intermediary(col)
-                 for col in (table.c._data.values()
-                             if hasattr(table.c,"_data") else table.c._colset)]
+        # columns=[column_to_intermediary(col) for col in table.c._data.values()]
+        # columns=[column_to_intermediary(col) for col in (table.c._data.values() if hasattr(table.c,"_data") else table.c._colset)]
+        columns=[column_to_intermediary(col) for col in getattr(table.c,"_colset",getattr(table.c,"_data",{}).values())]
     )
 
 
@@ -85,4 +95,3 @@ def database_to_intermediary(database_uri, schema=None):
     # reflect the tables
     Base.prepare(engine, reflect=True, name_for_scalar_relationship=name_for_scalar_relationship)
     return declarative_to_intermediary(Base)
-

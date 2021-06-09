@@ -20,3 +20,13 @@ GRAPH_BEGINNING = (' graph {\n'
                    '        style=dashed\n'
                    '    ];\n'
                    )
+# GRAPH_BEGINNING = (' graph {\n'
+#                    '    graph [rankdir=TB];\n'
+#                    '    node [label=\"\\N\",\n'
+#                    '        shape=plaintext\n'
+#                    '    ];\n'
+#                    '    edge [color=gray50,\n'
+#                    '        minlen=2,\n'
+#                    '        style=dashed\n'
+#                    '    ];\n'
+#                    )

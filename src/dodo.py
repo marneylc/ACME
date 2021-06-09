@@ -1,12 +1,12 @@
 from pathlib import Path
 from src.email_caching.downloader import doit_email_downloader
-from src.lemma_extraction.extraction_functions import extract_root_messages,extract_lemma
-from src.lemma_extraction.extraction_functions import message_roots_cache_dir, message_roots_map_fname
+from src.lemma_extraction.extraction_functions import extract_lemma
+from src.body_extraction.extraction_functions import extract_root_messages
 from src.db_tools.database_consolidation import doit_consolidate_databases
+from src.db_tools.database_consolidation import doit_generate_erd
 # from src.lemma_extraction import output_target_files
-from src.pathing_defs import cache_folder
-from src.__main__ import main
-from src import do_pickle, undo_pickle, DB_PATH_DICT
+from src.utils.pathing_defs import cache_folder
+from src import DB_PATH_DICT
 
 
 # extraction_targets = []
@@ -16,7 +16,6 @@ def load_analysis_tools_helper(*args):
     print(f"load_analysis_tools_helper({args=})")
 
     return args
-
 
 def confirm_package_setup():
     def inner(targets:list, file_dep:list):
@@ -30,13 +29,11 @@ def task_download_emails():
     targets = [str(cache_folder.joinpath("cached_emails.pkl"))]
     return dict(actions=actions,targets=targets,verbosity=2)
 
-
 def task_extract_root_message():
     actions = [extract_root_messages]
     targets = [str(DB_PATH_DICT["body"])]
     file_dep = [str(cache_folder.joinpath("ntlk_packages")), str(DB_PATH_DICT["email"])]
     return dict(actions=actions,file_dep=file_dep,targets=targets,verbosity=2)
-
 
 def task_extract_lemma():
     # global extraction_targets
@@ -52,7 +49,6 @@ def task_extract_lemma():
     # extraction_targets = targets[:]
     return dict(actions=actions,file_dep=file_dep,targets=targets,verbosity=2)
 
-
 def task_consolidate_databases():
     actions=[doit_consolidate_databases]
     file_dep = list(map(str,(DB_PATH_DICT[k] for k in ("email","body","lemma"))))
@@ -60,7 +56,17 @@ def task_consolidate_databases():
     return dict(actions=actions,file_dep=file_dep,targets=targets,verbosity=2)
 
 def task_generate_db_erd():
-    pass
+    actions=[doit_generate_erd]
+    output_target = cache_folder.joinpath("db_diagrams")
+    output_target.mkdir(parents=True,exist_ok=True)
+    file_dep = [output_target.joinpath(name) for name in output_target.iterdir() if name.suffix==".er"]
+    # targets = [str(output_target.joinpath("central_db.png")), str(output_target.joinpath("central_db.er"))]
+    targets = [str(p.with_name(p.stem+".png")) for p in file_dep]
+    file_dep = [str(p) for p in file_dep]
+    # file_dep = [str(DB_PATH_DICT["consolidated"])]
+    # file_dep = list(map(str,(DB_PATH_DICT[k] for k in ("email","body","lemma"))))
+    # targets = [str(DB_PATH_DICT["consolidated"])]
+    return dict(actions=actions,file_dep=file_dep,targets=targets,verbosity=2)
 
 # def task_load_analysis_tools():
 #     return dict(actions=load_analysis_tools_helper , targets=["load_analysis_tools_dummy_file.txt"])

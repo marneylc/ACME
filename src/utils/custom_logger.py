@@ -7,11 +7,11 @@ quick visual scans of a program's diagnostic data.
 # builtin imports
 import sys
 from sys import stdout as SYS_STDOUT
-from typing import Optional,Union
+from typing import Union
 import logging
 import inspect
 from logging import Formatter
-from src.pathing_defs import project_root_folder
+from src.utils.pathing_defs import project_root_folder
 from datetime import datetime as dt
 from pathlib import Path
 
@@ -372,7 +372,7 @@ def get_logger(root_name: str,
     if logger_registration_dict is None:
         logger_registration_dict = LOGGER_COLLECTION
     if isinstance(formatter,str):
-        if "stack" in formatter.lower():
+        if "callstackformatter" == formatter.lower():
             formatter = CallStackFormatter
     level = level if level is not None else (logging.DEBUG if DEBUGGING else logging.NOTSET)
     if isinstance(level, str):
