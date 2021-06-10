@@ -1,0 +1,31 @@
+* How are we ensuring unique identifiers for messages as we translate them between email entry point, email-consolidation point, and server-side cache point? 
+* include figure 1 from 
+	@inproceedings{DBLP:conf/lrec/ScerriGDH10,
+	  author    = {Simon Scerri and
+	               Gerhard Gossen and
+	               Brian Davis and
+	               Siegfried Handschuh},
+	  editor    = {Nicoletta Calzolari and
+	               Khalid Choukri and
+	               Bente Maegaard and
+	               Joseph Mariani and
+	               Jan Odijk and
+	               Stelios Piperidis and
+	               Mike Rosner and
+	               Daniel Tapias},
+	  title     = {Classifying Action Items for Semantic Email},
+	  booktitle = {Proceedings of the International Conference on Language Resources
+	               and Evaluation, {LREC} 2010, 17-23 May 2010, Valletta, Malta},
+	  publisher = {European Language Resources Association},
+	  year      = {2010},
+	  url       = {http://www.lrec-conf.org/proceedings/lrec2010/summaries/39.html},
+	  timestamp = {Mon, 19 Aug 2019 15:22:48 +0200},
+	  biburl    = {https://dblp.org/rec/conf/lrec/ScerriGDH10.bib},
+	  bibsource = {dblp computer science bibliography, https://dblp.org}
+	}
+
+	This speaks to what has been done before, and 
+
+* We acknowledge that the task for extracting the email messages and the semantic data from those messages is a fairly generic, if non-trivial task that is not the point of interest in the challenge we face. That is the portion of the code base that we anticipate people would likley be willing to accept as an executable, or at least a compilable source repo. The point that we need to have very well defined, such that the source code is not explicitly required to reproduce our results is the classification strategy and associated algos. 
+
+* make sure to add the ordeal surrounding the identification/correction of special and strange characters when translating between the different encodings and transportation mediums.

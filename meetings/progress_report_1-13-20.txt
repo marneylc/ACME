@@ -1,0 +1,85 @@
+check in date: Wed. January 13, 2020
+
+
+
+Week's abstract objectives:
+
+	In order to classify email messages, we need a way to reliably decompose those messages to some quantifiable value representation. To me, this means some n-dimensional vector that we can have a computer analyze. 
+	This is where the idea of clustering comes in. We need to be able to measure some sort of distance (like the Euclidian distance between data points on a 2D plane)
+
+
+
+Process details:
+
+	1. What were our short term goals?
+		a. Develop tools to acquire input data (emails)
+			+ Done
+				* email data is downloaded, assigned unique hash id, and cached as a pickled byte file.
+
+		b. Parse the IMAP input data structures and extract original message body contents.
+			- Semi-Done
+				* The wide range of format and structure found in the input emails means that some email inputs still include extraneous header or reference data that shouldn't be considered in the message analysis. 
+
+		c. Apply initial NLTK word-bag, TF-IDF (term frequency - inverse document frequency), and lemma demo operations to parse email data.
+			+ Done
+				* Note that further analysis of the resulting data needs to be done in order to evaluate if alternative tools or preprocessing will be required.
+
+
+
+	2. How you approached the goal. 
+		* Since I am a single coder, there wasn't much development life cycle applied in the development of the code so far.
+		* The process was largely iterative, where each iteration served 2 purposes. 
+			1. Explore a facet of the external libraries being applied in this project, thus building the program flow towards the some goal.
+			2. Incremental test development to allow future regression testing as project grows.
+
+	3. Did it work? 
+		a. Yes
+		b. Yes and no... The task of email parsing and segmentation is complex on its own. There are many variant forms and standards that email can present under and there appears to be no
+		  one general algorithm for properly handling them all.
+	       * At the minimum, we reliably download email, create unique hash IDs for them, and cache them to disk as obfusicated byte files.
+	       * Some emails will require the development of additional tools to properly identify their encoding type or to identify and fix characters in their text that were broken by some encoding 
+	         transition in the caching process.
+	    c. Yes; however, as noted above, further analysis of the output is required to better plan how we will create a "characteristics vector" for any given email.
+
+
+	4. Next stuff and discussion
+		* Identify a process for developing and testing email classification clusters using hand-picked input data points.
+			* Clustering doesn't have to be correct yet, we simply want have a way to objectively evaluate if a specific input can be made to consistently produce a target output.
+
+
+
+
+Definitions and clarification:
+
+	tf-idf:
+
+	let tf(w,d) = log( 1 + (count(w)/word_count(d)) )
+	let idf(w,D) = log(document_count(D)) - log(count_docs_containing_t(w,D))
+
+	where:
+		w is a word, and w in W, and W is the set of all words from a given document
+		d is a document, and d in D, and D is the set of all Documents 
+
+	then tf_idf(w,d,D) = dot_product(tf(w,d),idf(w,D))
+
+	what is tf-idf:
+		https://monkeylearn.com/blog/what-is-tf-idf/#:~:text=TF%2DIDF%20is%20a%20statistical,across%20a%20set%20of%20documents.
+
+
+
+	Next objectives:
+
+	- FOCUS ON CLARIFYING THE PROCESS UP TO THIS POINT.
+	- CLARITY OVER PRECISION
+		* create diagrams clarifying:
+			1. Program flow
+				* Caching
+				* Parsing
+				* Filtering
+				* Automation
+				* Numpy->Pandas-> Maybe Numba? 
+					+ break down relevant API points and provide those as just links at the end of all documentation... or something
+			2. Plan or hypothesis for how to address classification based upon NLTk output
+		* create a power-point that breaks down where we've been, in super simplified terms, and where we are now.
+			* emphasis clarity over precision.
+			* start with an over emphasis on clarity, and simplicity for reader understanding. If it's too simple, that can be addressed later.
