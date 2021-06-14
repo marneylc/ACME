@@ -1,9 +1,0 @@
-<map id="src.db_tools.db_class_defs.ThreadedDBBase.enqueue_add_row" name="src.db_tools.db_class_defs.ThreadedDBBase.enqueue_add_row">
-<area shape="rect" id="node1" title=" " alt="" coords="5,97,216,153"/>
-<area shape="rect" id="node2" href="$classsrc_1_1body__extraction_1_1cache__class__defs_1_1_message_body_d_b.html#a1068fb482d68c7436bd5db942dcfafd5" title=" " alt="" coords="264,5,512,47"/>
-<area shape="rect" id="node3" href="$classsrc_1_1lemma__extraction_1_1cache__class__defs_1_1_lemma_d_b.html#a72fb9592002b684c5920f5856ecfe7b2" title=" " alt="" coords="284,71,492,112"/>
-<area shape="rect" id="node4" href="$classsrc_1_1email__caching_1_1cache__class__defs_1_1_email_d_b.html#a4077c5ee789b4791502fab4fa901d6d5" title=" " alt="" coords="289,136,487,177"/>
-<area shape="rect" id="node5" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#a9cecfb49b2da2b1f574adc0d810fb5c2" title=" " alt="" coords="309,201,467,243"/>
-<area shape="rect" id="node6" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#a429bfd28d78ab3be7bfc8b3f24509fa1" title="Calling this property requires that we have made a previous call to self.__call__() in order to prope..." alt="" coords="757,201,929,243"/>
-<area shape="rect" id="node7" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#afab76d33daab3aa5e5c9263f284ee9d6" title=" " alt="" coords="560,231,709,272"/>
-</map>
