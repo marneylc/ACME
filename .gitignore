@@ -12,9 +12,9 @@ DemoPrograms/
 *TimeClock*.*
 *.hdf5
 target_history.json
-unet\.ini
 **/test/test_db_folder/*
 *.html
+!**/documentation/**/*.html
 **/cache_files/
 **/sample_inputs/
 **/notes*
