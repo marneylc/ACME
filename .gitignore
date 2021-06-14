@@ -14,7 +14,7 @@ DemoPrograms/
 target_history.json
 **/test/test_db_folder/*
 *.html
-!**/documentation/**/*.html
+!**/docs/*.html
 **/cache_files/
 **/sample_inputs/
 **/notes*

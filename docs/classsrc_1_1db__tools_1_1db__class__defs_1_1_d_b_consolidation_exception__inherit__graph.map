@@ -1,0 +1,5 @@
+<map id="src.db_tools.db_class_defs.DBConsolidationException" name="src.db_tools.db_class_defs.DBConsolidationException">
+<area shape="rect" id="node1" title="A custom exception class that we raise should something fishy occur during the creation of a consolid..." alt="" coords="5,169,216,211"/>
+<area shape="rect" id="node2" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base_exception.html" title="The custom database exception base class." alt="" coords="29,80,192,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="71,5,151,32"/>
+</map>

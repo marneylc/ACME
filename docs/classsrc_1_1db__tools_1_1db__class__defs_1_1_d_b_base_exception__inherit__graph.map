@@ -1,0 +1,14 @@
+<map id="src.db_tools.db_class_defs.DBBaseException" name="src.db_tools.db_class_defs.DBBaseException">
+<area shape="rect" id="node1" title="The custom database exception base class." alt="" coords="133,300,296,341"/>
+<area shape="rect" id="node3" href="$classsrc_1_1body__extraction_1_1cache__class__defs_1_1_msg_body_d_b_exception.html" title=" " alt="" coords="344,5,571,47"/>
+<area shape="rect" id="node4" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_attach_failed_exception.html" title="A custom exception class that we raise should something fishy occur while attaching a secondary DB to..." alt="" coords="363,71,551,112"/>
+<area shape="rect" id="node5" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_consolidation_exception.html" title="A custom exception class that we raise should something fishy occur during the creation of a consolid..." alt="" coords="352,136,563,177"/>
+<area shape="rect" id="node6" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_detach_exception.html" title="A custom exception class that we raise if any sqlite3.OperationalError occur while detaching from a s..." alt="" coords="370,201,545,243"/>
+<area shape="rect" id="node7" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_locked_exception.html" title="A custom exception class that we raise when we detect a locked connection." alt="" coords="370,267,545,308"/>
+<area shape="rect" id="node8" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_exit_exception.html" title="A custom exception class that we raise should something fishy occur while exiting a DBBase context." alt="" coords="383,332,532,373"/>
+<area shape="rect" id="node9" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_illegal_d_b_access_exception.html" title=" " alt="" coords="352,397,563,439"/>
+<area shape="rect" id="node10" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_uninitialized_connection_exception.html" title="A custom exception class that we raise should we create a new DBBase context before initializing the ..." alt="" coords="361,463,553,519"/>
+<area shape="rect" id="node11" href="$classsrc_1_1email__caching_1_1cache__class__defs_1_1_email_d_b_exception.html" title=" " alt="" coords="355,544,559,585"/>
+<area shape="rect" id="node12" href="$classsrc_1_1lemma__extraction_1_1cache__class__defs_1_1_lemma_d_b_exception.html" title=" " alt="" coords="350,609,565,651"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,307,85,334"/>
+</map>
