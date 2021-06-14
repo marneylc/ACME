@@ -1,6 +1,12 @@
+
+"""
+@db_tools.db_class_defs.py
+Custom Database Base-Class definitions for creating and managing context scoped sqlite3.Connection objects.
+"""
 # builtin imports
 import sqlite3 as sqlt3
 from typing import List, Optional, Union, Type, Tuple, Any, Dict, AnyStr
+from types import FunctionType
 from pathlib import Path
 from textwrap import dedent
 from collections import ChainMap
@@ -14,14 +20,22 @@ from src import cache_folder
 from src import to_list
 from src import get_logger
 
+
 info_logger = get_logger("EmailClassifier", __name__ + ": DBBase logger", level="INFO")
 
 
+##
+# The custom database exception base class.
+#
+# This is an interface that assures all subclasses have member attributes to accommodate detailed diagnostic info for exception handling and debugging.
 class DBBaseException(Exception):
-    faulty_sql: List[str] = []
-    faulty_db_name: List[Union[str, Path]] = []
-    faulty_db_label: List[str] = []
-    faulty_table: List[str] = []
+    """The custom database exception base class.
+
+    This is an interface that assures all subclasses have member attributes to accommodate detailed diagnostic info for exception handling and debugging."""
+    faulty_sql: List[str]
+    faulty_db_name: List[Union[str, Path]]
+    faulty_db_label: List[str]
+    faulty_table: List[str]
 
     def __init__(self,
                  *args: object,
@@ -29,6 +43,10 @@ class DBBaseException(Exception):
                  faulty_db_name: List[Union[str, Path]] = None,
                  faulty_db_label: List[str] = None,
                  faulty_table: List[str] = None, ) -> None:
+        self.faulty_sql = []
+        self.faulty_db_name = []
+        self.faulty_db_label = []
+        self.faulty_table = []
         super().__init__(*args)
         if faulty_sql:
             self.faulty_sql.extend(faulty_sql)
@@ -40,57 +58,95 @@ class DBBaseException(Exception):
             self.faulty_table.extend(faulty_table)
 
 
+##
+# A custom exception class that we raise should something fishy occur during the creation of a consolidated DB
 class DBConsolidationException(DBBaseException):
+    """A custom exception class that we raise should something fishy occur during the creation of a consolidated DB"""
     pass
 
 
+##
+# A custom exception class that we raise should something fishy occur while attaching a secondary DB to an existing connection
 class AttachFailedException(DBBaseException):
+    """A custom exception class that we raise should something fishy occur while attaching a secondary DB to an existing connection"""
     pass
 
 
+##
+# A custom exception class that we raise should we create a new DBBase context before initializing the primary
+# database connection. This exception likely indicates a logic error in how a subclass of DBBase was implemented.
 class UninitializedConnectionException(DBBaseException):
+    """A custom exception class that we raise should we create a new DBBase context before initializing the primary
+     database connection. This exception likely indicates a logic error in how a subclass of DBBase was implemented."""
     pass
 
-
+##
+# A custom exception class that we raise if any sqlite3.OperationalError occur while detaching from a
+# secondary db.
 class DBDetachException(DBBaseException):
+    """A custom exception class that we raise if any sqlite3.OperationalError occur while detaching from a
+    secondary db."""
     pass
 
-
+##
+# A custom exception class that we raise when we detect a locked connection.
+# Encountering this exception likely means a cursor object has been invalidated by some other DB change
+# before the cursor was closed.
 class DBLockedException(DBBaseException):
+    """A custom exception class that we raise when we detect a locked connection.
+    Encountering this exception likely means a cursor object has been invalidated by some other DB change
+    before the cursor was closed."""
     pass
 
-
+##
+# A custom exception class that we raise should something fishy occur while exiting a DBBase context.
 class ExitException(DBBaseException):
+    """A custom exception class that we raise should something fishy occur while exiting a DBBase context."""
     pass
 
 class IllegalDBAccessException(DBBaseException):
     pass
 
+##
+# The base class for our various custom database management classes.
+#
+# This is the alpha implementation that does not utilize the SQAlchemy library
+# and will likely be deprecated in coming weeks.
 class DBBase:
     attached_dbs:dict
+    """A mapping of additional DBs the primary DB connection has access to."""
     _table_names: List[str]
-    _column_names: Dict[str, str]
+    _column_names: Dict[str, List[str]]
+    ## A list of DB connections, this list should only grow when creating a new context, and should only grow to contain
+    # more than 1 connection when the caller creates nested contexts.
     _con: List[sqlt3.Connection]
+    ## A nested list of temporary database connections. This allows the caller to create cursors that persist through
+    # the lifespan of a given context and be assured those cursors will be properly released when the context closes.
     _curs: List[List[sqlt3.Cursor]]
     # entry_ordinals is only updated in
     # the self.__enter__ and self.__exit__ functions
     _entry_ordinals: List[int]
+    """DEPRECATED -- A list of int that maps connection objects to the ordinal position of their creating context.
+    This mapping is used when a context exits and we need to clean up any connections created outside of the context's
+    initial entry point."""
     __table_attr_template__ = {
         "db_label": "main.",
         "pkey_name": "id",
         "pkey_type": DB_SUPPORTED_TYPES[int],
         "data_points": "",
     }
+    """A template for the creation of nested maps (via ChainMap) that represent successively nested context blocks."""
     _table_registry_sql_attrs: dict
+    """A dictionary of the different """
     _table_mapped_column_names: dict
     _do_table_reg_context_pop: int = 0
     _do_context_detach_db: int = 0
     _uncommitted: set
-    _table_registry_sql = dedent("""
+    _table_registry_sql = """
     CREATE TABLE IF NOT EXISTS {db_label}{table_name} (
         {pkey_name} {pkey_type} PRIMARY KEY NOT NULL,{data_points}
     );
-    """)
+    """
     # these next 7 fields are allow us to tweak the
     # default sqlite3.Connection instantiation values at the class level.
     _database: Union[bytes, str, Path]
@@ -132,11 +188,7 @@ class DBBase:
             s = ",\n    ".join(f"{n} {dtype_mapping[n]}" for n in cnames if n in dtype_mapping)
             table_map["data_points"] = f"\n\t{s}"
             table_map["table_name"] = tname
-        # self._establish_new_connection(do_register_tables=False)
         self._establish_new_connection()
-        # with self("main"):
-        #     for table in self.table_names:
-        #         self._register_table(table, self._table_registry_sql_attrs)
 
     def _sanitize_column_names_list(self, column_names):
         if isinstance(column_names, str):
@@ -157,16 +209,27 @@ class DBBase:
             column_names = [column_names for _ in range(len(self._table_names))]
         return column_names
 
+    ##
+    # A mapping of the column names that can be found in a given table. The elements of _table_names can be used as
+    # keys to map a table's name to the associated list of column names.
     @property
     def column_names(self) -> Dict[str,List[str]]:
+        """A mapping of the column names that can be found in a given table. The elements of _table_names can be used as
+        keys to map a table's name to the associated list of column names."""
         return self._column_names.copy()
 
+    ##
+    # A list of strings, where each element in the list is the name of a table in the main DB
     @property
     def table_names(self) -> List[str]:
+        """A list of strings, where each element in the list is the name of a table in the main DB"""
         return self._table_names.copy()
 
+    ##
+    # Returns a pathlib.Path object pointing to our primary db connection for this instance.
     @property
     def database(self) -> Path:
+        """Returns a pathlib.Path object pointing to our primary db connection for this instance."""
         return Path(self._database)
 
     @database.setter
@@ -184,14 +247,14 @@ class DBBase:
             warn_logger.warning(msg)
         self._database = database
 
+    ##
+    # Calling this property requires that we have made a previous call to self.__call__() in order to properly
+    # initialize our active base sqlite3.Connection.
+    #
+    # :return: A reference to our most recently created sqlite3.Connection object.
+    # :rtype: sqlite3.Connection
     @property
     def connection(self) -> sqlt3.Connection:
-        """Calling this property requires that we have made a previous call to self.__call__() in order to properly
-        initialize our active base sqlite3.Connection.
-
-        :return: A reference to our most recently created sqlite3.Connection object.
-        :rtype: sqlite3.Connection
-        """
         if not self._con:
             raise UninitializedConnectionException(
                 "Exception occurred when trying to access db connection outside of proper context management.")
@@ -254,6 +317,18 @@ class DBBase:
             if con.in_transaction:
                 con.commit()
 
+    ##
+    # This function allows for multiple nested context blocks that can inspect existing contents of primary DB but
+    # then perform updates and changes to data on an in-memory copy for performance purposes. Then when the context
+    # closes, we call consolidate_mem_to_disk and update the primary DB according to the state of the in-memory image.
+    #
+    # :param table_names: OPTIONAL; Defaults to None;
+    #                     Allows either a string or a iterable collection of strings that specifies which tables from
+    #                     the in-memory image should be applied as updates to the primary database connection.
+    # :type table_names: Optional[Union[str, Union[List[str], Tuple[str]]]]
+    #
+    # :return: No return value
+    # :rtype: None
     def consolidate_mem_to_disk(self, table_names: Optional[Union[str, Union[List[str], Tuple[str]]]] = None) -> None:
         self.commit()
         root_con = self._con[0]
@@ -283,9 +358,75 @@ class DBBase:
             root_curs.close()
             root_con.commit()
 
-    def _establish_new_connection(self, database=None, timeout=None, detect_types=None,
-                                  isolation_level=None, check_same_thread=None,
-                                  factory=None, cached_statements=None, do_register_tables:bool=True):
+    def _establish_new_connection(self, database:Optional[Union[str,Path]]=None,
+                                  timeout:Optional[float]=None,
+                                  detect_types:Optional[int]=None,
+                                  isolation_level:Optional[int]=None,
+                                  check_same_thread:Optional[bool]=None,
+                                  factory:Optional[FunctionType]=None,
+                                  cached_statements:Optional[int]=None,
+                                  do_register_tables:Optional[bool]=True):
+        """A private class function that properly creates a new connection and sets up the required mapping references
+        to handle that connection in and out of context blocks.
+
+        For greater detail on this function's parameters, see sqlite3.connect(...) documentation.
+
+        :param database: OPTIONAL; Defaults to self._database;
+                        The absolute or relative path to the database we should connect to. This an also be "memory"
+        :type database: Optional[Union[str,Path]]
+
+        :param timeout: OPTIONAL; Defaults to self._timeout;
+                        Specifies how long attempted transactions should wait to timeout.
+        :type timeout: Optional[float]
+
+        :param detect_types: OPTIONAL; Defaults to self._detect_types;
+                            detect_types defaults to 0 (i. e. off, no type detection), you can set it to any combination
+                            of PARSE_DECLTYPES and PARSE_COLNAMES to turn type detection on. Due to SQLite behaviour,
+                            types can’t be detected for generated fields (for example max(data)), even when detect_types
+                            parameter is set. In such case, the returned type is str.
+        :type detect_types: Optional[int]
+
+        :param isolation_level: OPTIONAL; Defaults to self._isolation_level;
+                                Get or set the current default isolation level.
+                                 None for autocommit mode or one of
+                                    “DEFERRED”,
+                                    “IMMEDIATE”
+                                    “EXCLUSIVE”.
+                                See section Controlling Transactions for a more detailed explanation.
+                                (https://docs.python.org/3/library/sqlite3.html#sqlite3-controlling-transactions)
+        :type isolation_level: Optional[int]
+
+        :param check_same_thread: OPTIONAL; Defaults to self._check_same_thread;
+                                  By default, check_same_thread is True and only the creating thread may use the
+                                  connection. If set False, the returned connection may be shared across multiple threads.
+                                  When using multiple threads with the same connection writing operations should be
+                                  serialized by the user to avoid data corruption.
+        :type check_same_thread: Optional[bool]
+
+        :param factory: OPTIONAL; Defaults to self._factory;
+                        By default, the sqlite3 module uses its Connection class for the connect call.
+                        You can, however, subclass the Connection class and make connect() use your class instead by
+                        providing your class for the factory parameter.
+        :type factory: Optional[FunctionType]
+
+        :param cached_statements: OPTIONAL; Defaults to self._cached_statements;
+                                  The sqlite3 module internally uses a statement cache to avoid SQL parsing overhead.
+                                  If you want to explicitly set the number of statements that are cached for the connection,
+                                  you can set the cached_statements parameter. The currently implemented default is to
+                                  cache 100 statements.
+        :type cached_statements: Optional[int]
+
+        :param do_register_tables: OPTIONAL; Defaults to self._do_register_tables;
+                                   A bool value indicating if the new connection must have the same table schema as our
+                                   primary connection.
+
+                                   This is implicitly mandatory when setting up the primary connection itself.
+        :type do_register_tables: Optional[bool]
+        :return: No return value
+        :rtype: None
+        """
+        if database == "memory":
+            database = ":memroy:"
         kwargs = {name: arg
                   for arg, name in ((database if database is not None else self._database, "database"),
                                     (timeout if timeout is not None else self._timeout, "timeout"),
@@ -373,9 +514,33 @@ class DBBase:
         return self
 
     def __enter__(self):
+        """Called when creating a new context block, E.G.:
+        ::
+
+            with DBBase(*args) as db:
+                # do stuff with db knowing you have a proper connection
+                # and any used resources will be safely released when this context exits.
+
+        Note: It is acceptable and often encouraged to nest context blocks to create limiting scopes for short lived
+              resource usage.
+
+        :return:
+        :rtype:
+        """
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """ Exit a context and release any resources created under the scope of that context.
+
+        :param exc_type:
+        :type exc_type:
+        :param exc_val:
+        :type exc_val:
+        :param exc_tb:
+        :type exc_tb:
+        :return:
+        :rtype:
+        """
         try:
             _con_idx = self._entry_ordinals.pop()
             con = self._con.pop(_con_idx)
@@ -606,6 +771,11 @@ class DBBase:
             if drop_cursor:
                 curs.close()
 
+
+##
+# This is an experimental class that is not yet finished!!
+# An experimental subclass of DBBase attempting to perform manipulations on data in memory then write the results to a
+# a connection being managed on the __main__ thread.
 class ThreadedDBBase(DBBase):
     _exec_queue: deque
     _producers: set

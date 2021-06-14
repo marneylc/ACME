@@ -1,0 +1,1 @@
+# Email Collection sub-module (src/email_caching/)

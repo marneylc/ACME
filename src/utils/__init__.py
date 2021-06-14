@@ -1,3 +1,13 @@
+"""
+@src.utils.__init__.py
+
+The project's actual __init__.py file, this is where we initialize all of the shared dependencies for the despirit
+submodules of the project.
+
+Should a user wish to extract specific components from this project, they should also always take the src/utils folder
+along with their chosen submodule.
+"""
+
 # builtin imports
 import gc
 import pickle
@@ -14,6 +24,7 @@ from .pathing_defs import *
 from .custom_logger import get_logger,get_logging_file_target,DEBUGGING
 from .custom_logger import import_warnings_logger
 from .pathing_defs import cache_folder
+
 
 
 nltk_packages = Path(cache_folder.root).resolve().absolute().joinpath("nltk_packages")
@@ -36,7 +47,9 @@ except ImportError:
     nltk_loader = None
     import_warnings_logger(f"The NLTK library isn't available on this machine, no NLP tools will be enabled.",exc_info=True)
 
-
+##
+# Subclassed the Downloader provided by nltk to give better control over the garbage console output the
+# default implementation forced on us.
 class PoliteDownloader(nltk.downloader.Downloader):
     """
     Subclassed the Downloader provided by nltk to give better control over the garbage console output the
@@ -114,10 +127,17 @@ class PoliteDownloader(nltk.downloader.Downloader):
 txt = PoliteDownloader().list(nltk_path_str, color_coded=True, skip_not_installed=True)
 txt.append("\n\n")
 plain_info_logger = get_logger("EmailClassifier",__name__+": plain logger",level="INFO")
-("\n".join(txt))
+src_warning_logger = get_logger("EmailClassifier",__name__+": warning",level="WARNING")
+plain_info_logger.info("\n".join(txt))
 
-proj_base_info_logger = get_logger("EmailClassifier",__name__+": root logger",level="INFO")
+##
+# The root logger object for the project
+proj_base_info_logger = get_logger("EmailClassifier","root logger",level="INFO")
 
+
+##
+# A helper function for converting semantically meaningful, and detailed attribute keys into conveniently short
+# alias keys.
 def alias_keys(d:dict):
     keys = tuple(d.keys())
     for k in keys:
@@ -127,7 +147,7 @@ def alias_keys(d:dict):
             d.setdefault(new_k,val)
             d.setdefault(new_k.lower(), val)
 
-
+##
 # defining global references to the data types our database objects can support.
 DB_INTEGER = "INTEGER"
 DB_NULL = "NULL"
@@ -137,6 +157,7 @@ DB_BLOB = "BLOB"
 PROJ_CUSTOM_CLASSES = "COMPLEX_JSON"
 PROJ_SIMPLE_JSON = "SIMPLE_JSON"
 
+##
 # project scoped dictionaries
 DB_SUPPORTED_TYPES = {
     "int":DB_INTEGER,
@@ -162,6 +183,9 @@ DB_SUPPORTED_TYPES = {
 }
 alias_keys(DB_SUPPORTED_TYPES)
 
+##
+# A mapping of our projects specific database paths.
+# If a user wishes to customize database naming, this is where they should make those changes.
 DB_PATH_DICT = {
     "email_cache":cache_folder.joinpath("sql3_email.db"),
     "body_cache":cache_folder.joinpath("sql3_message_body.db"),
@@ -170,6 +194,9 @@ DB_PATH_DICT = {
 }
 alias_keys(DB_PATH_DICT)
 
+##
+# A mapping of table names where each key corresponds to a key from DB_PATH_DICT above, and the values are lists of
+# strings defining the names of the tables that database should have.
 TABLE_NAMES = {
     "email_cache":["emails"],
     "body_cache":["message_body"],
@@ -177,7 +204,7 @@ TABLE_NAMES = {
 }
 alias_keys(TABLE_NAMES)
 
-src_warning_logger = get_logger("EmailClassifier",__name__+": warning",level="WARNING")
+
 
 
 def handle_warning_about_unexpected_exceptions(be:BaseException,*details:Iterable):
@@ -199,7 +226,10 @@ def undo_pickle(fd_or_data, is_file:bool=True):
         if not gc.isenabled():
             gc.enable()
 
-
+##
+# A convenience function for quickly creating python pickle objects that temporarily disables garbage collection during
+# the serialization process. In some cases, turning garbage collection off can represent a 20x speedup in the time
+# it takes to pickle an object.
 def do_pickle(obj,fd=None,protocol=-1):
     if gc.isenabled():
         gc.disable()
@@ -214,6 +244,9 @@ def do_pickle(obj,fd=None,protocol=-1):
             gc.enable()
 
 
+##
+# An abstract base class that represents a generic interface for custom class objects that will end up being
+# cached as byte strings in a database.
 class JPickleSerializable:
     _my_attrs:List[str]
 
@@ -234,6 +267,9 @@ class JPickleSerializable:
             return self.to_json()
 
 
+##
+# An extension of the JPickleSerializable interface that ensures our custom classes can properly handle our
+# custom character substitutions after being serialized/deserialized via the JPickleSerializable interface.
 class TaggerBase(JPickleSerializable):
     @staticmethod
     def word_token_cleanup(tokens):
@@ -242,6 +278,11 @@ class TaggerBase(JPickleSerializable):
                 tokens[i - 1] += tokens.pop(i).replace("'", "_^_")
         return " ".join(tokens)
 
+##
+# A convenience function for ensuring an object is a list of strings.
+# This function is called in several places.
+# It ensures that function arguments of type Union[Path,AnyStr,List[Union[Path,AnyStr]]] will be resolved to a list of
+# strings.
 def to_list(obj)->List[str]:
     if isinstance(obj,list):
         return obj

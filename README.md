@@ -1,4 +1,4 @@
-# EmailClassification
+# ACME: Automated Collection and Manipulation of Email
 Create order where chaos reigns, your inbox ;)
 
 

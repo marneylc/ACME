@@ -15,7 +15,6 @@ dependencies:
   - sqlalchemy
   - beautifulsoup4
   - scikit-learn
-  - graphviz
   - pygraphviz
   - pytest
   - psycopg2

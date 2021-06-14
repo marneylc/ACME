@@ -1,7 +1,29 @@
+"""
+@src.__main__.py
+The primary entry point for the project.
+"""
 from utils.__main__ import *
-
-
+##
+# A debugging function that allows us to adhere to the signature requirements defined by Doit (a third party library)
+# but without having to handle the technical details of launching multiple child terminals via the subprocess module.
+#
+# This is just to simplify debugging of internal code before integrating Doit to automate task execution.
 def emulate_doit(doit_d:dict):
+    """
+    A debugging function that allows us to adhere to the signature requirements defined by Doit (a third party library)
+    but without having to handle the technical details of launching multiple child terminals via the subprocess module.
+
+    This is just to simplify debugging of internal code before integrating Doit to automate task execution.
+    :param doit_d: A dictionary that should contain the following key/value pair structure:
+                {
+                    'actions': types.FunctionType, # target function that should be executed with arguments [file_dep, targets]
+                    'targets': List[str], # a list of path-strings for target output files, if any, else an empty list
+                    'file_dep': list[str], # a list of path-strings for input/dependency files, if any, else an empty list.
+                }
+    :type doit_d: dict
+    :return:
+    :rtype:
+    """
     actions = doit_d.pop("actions")
     verbosity = doit_d.pop("verbosity",None)
     for func_a in actions:

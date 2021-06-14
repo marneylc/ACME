@@ -1,3 +1,10 @@
+"""
+@src.utils.__main__.py
+
+This is where we handle registering our custom converters and adapters that tells the sqlite3 package how to handle our
+custom data structures.
+"""
+
 # builtin imports
 import subprocess
 import os
@@ -72,6 +79,9 @@ sqlt3.register_converter(DB_SUPPORTED_TYPES["simple"],convert_simple_json)
 #######################################################################################################################
 # project's primary console entry point
 #######################################################################################################################
+##
+# The main function is responsible for launching subprocess interpreters that will then run the Doit package's task
+# automation.
 def main():
     # ToDo: configure arg parsing for CLI
     proj_base_info_logger.warning("EmailClassifier launched")
