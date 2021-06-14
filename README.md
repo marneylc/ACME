@@ -1,7 +1,7 @@
 # ACME: Automated Collection and Manipulation of Email
 Create order where chaos reigns, your inbox ;)
 
-### [Project documentation:](docs/index.html)
+### [Project documentation:](https://ryancpeters.github.io/ACME/)
 
 
 Isolated downloader demonstration steps:
