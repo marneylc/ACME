@@ -24,6 +24,9 @@ For example, you may download an app that helps you schedule workouts with frien
 
 ###### Sharing your Google data with Apps
 Learn about how you can share your Google data with apps to make your life easier -- and what you can do to protect your personal information.
+=======
+### [Project documentation:](https://ryancpeters.github.io/ACME/)
+
 
 ###### Review what a third party can access
 You can review the type of account access a third party has as well as the Google services it has access to.
