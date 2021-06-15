@@ -86,10 +86,10 @@ Installation instructions
          * or you can call `conda env export --from-history`
             * This will tell you explicitly what the `environment.yml` file required.
 5. Sanity check:
-   * You should be in a conda activated terminal, inside of the `acme_env` virtual environment.
+   * You should be in a conda activated terminal, with the active environment being our `acme_env` virtual environment.
    * You should also be in the `ACME` folder, which is the root of the project, 
    * The `setup.py` file should also be in the `ACME` folder.
-6. Now we have `pip` use the `setup.py` file to modify the environment.
+6. Now we use `pip` to execute the `setup.py` file which creates a terminal entry-point for the application.
    * ` python -m pip install -e .`
       * tells python to run pip install with the `-e` flag that signals to use a local `setup.py` file.
       * we pass `.` to say that the `setup.py` file is located in the current working directory.
@@ -97,14 +97,14 @@ Installation instructions
    * output should look something like this:
 ```
 	$ python -m pip install -e .
-	Obtaining file:///D:/GitHub_Remotes/shcool/EmailClassification
-	Installing collected packages: EmailClassification
-	  Running setup.py develop for EmailClassification
-	Successfully installed EmailClassification
+	Obtaining file:///D:/GitHub_Remotes/shcool/ACME
+	Installing collected packages: ACME
+	  Running setup.py develop for ACME
+	Successfully installed ACME
 ```
-7. ~~We can now call the downloader command line entry point `email_download` to get the default implementation of the downlaoder.~~
+7. ~~We can now call the downloader command line entry point `collect_email` to get the default implementation of the downlaoder.~~
    	  * ~~The default implementation will download from the hard-coded email server, targeting the hard-coded account and password, and will cache the downloaded emails in the `*/EmailClassification/cache_files/` folder,~~
-      * ~~Alternatively, you can call `email_download /path/to/your/desired/cache/point`~~
+      * ~~Alternatively, you can call `collect_email /path/to/your/desired/cache/point`~~
          * ~~This custom cache directory will be created should it not already exist.~~
    * ~~If you would like to manually inspect the entire list of entry points the `setup.py` file created, see the keyword `entry_points` at the bottom of the `setup.py` file.~~
       * ~~This list is subject to change over time as further entry points are added.~~
