@@ -3,9 +3,20 @@ ACME
 ## Automated Collection and Manipulation of Email
 *Create order where chaos reigns, your inbox ;)*
 
-This project aims to automate away the tediouse and technical details involved with 
+***This readme is still in revision as of June 14, 2021... you've been warned***
 
-**This readme is still in revision as of June 14, 2021... you've been warned**
+This project aims to automate away the tediouse and technical details involved with:
+* collecting email from an imap mail server
+* Extracting the raw message text (or last message text if part of a thread) from the imap envlope structure
+* Applying basic NLTK tools to the raw message text to produce lemmatized word-bags (a csr_matrix from the scikit-learn package)
+
+I also aim to present this project as a sort of open-topped toolkit. Meaning it should allow users to grab only the sub-modules they need in order do any one of the previously listed tasks.
+
+This project has become a sort of hobby project for me, so I will continue to hack at it until I feel it has matured to the point that:
+* A user can easily import this project from their own code and access only the tools they need
+* There is a clear and thoroughly defined process for a community to extend the feature set of the project
+* There is a clear and thoroughly defined process for guiding a user on how to supplement their own code in place of any sub-modules provided in this project.
+
 
 Prerequisites to using this application
 ---
