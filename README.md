@@ -65,30 +65,30 @@ Installation instructions
    * choose your installation process and follow the docs they provide.
 2. launch the resulting conda terminal (In windows this is a specific powershell/cmd terminal, this may vary on \*nix systems)
 3. clone this repository to your local machine, then cd into that cloned directory.
-   * the contents should look something like:
+   * `git clone https://github.com/RyanCPeters/ACME.git`
+   * `cd ACME`
+   * the contents of the directory should look something like:
 ```
-|- EmailClassification
-	|- Presentation_resources
-		|- ignorable stuffs for now
-	|- src
+|- ACME/
+	|- src/
 		|- code files and stuff...
 	|- .gitignore
-	|- environment.yml     			# this environment file is for full classification pipeline
+	|- environment.yml
 	|- README.md
 	|- setup.py
 ```
 4. use conda to set up and activate your virtual environment.
-   * ` conda env create -f ./environment.yml`
-   * `conda activate email_downlaoder_env`
+   * `conda env create -f ./environment.yml`
+   * `conda activate acme_env`
       * optionally, you may inspect the packages available in the environment as follows:
          * `conda env export`
             * gives a verbose listing of packages and their versions
          * or you can call `conda env export --from-history`
-            * This will tell you explicitly what the `downloader_environment.yml` file required.
+            * This will tell you explicitly what the `environment.yml` file required.
 5. Sanity check:
-   * You should be in a conda activated terminal, inside of the `email_downlaoder_env` virtual environment.
-   * You should also be in the `EmailClassification` folder, which is the root of the project, 
-   * The `setup.py` file should also be in the `EmailClassification` folder.
+   * You should be in a conda activated terminal, inside of the `acme_env` virtual environment.
+   * You should also be in the `ACME` folder, which is the root of the project, 
+   * The `setup.py` file should also be in the `ACME` folder.
 6. Now we have `pip` use the `setup.py` file to modify the environment.
    * ` python -m pip install -e .`
       * tells python to run pip install with the `-e` flag that signals to use a local `setup.py` file.
@@ -102,12 +102,12 @@ Installation instructions
 	  Running setup.py develop for EmailClassification
 	Successfully installed EmailClassification
 ```
-7. We can now call the downloader command line entry point `email_download` to get the default implementation of the downlaoder.
-   	  * The default implementation will download from the hard-coded email server, targeting the hard-coded account and password, and will cache the downloaded emails in the `*/EmailClassification/cache_files/` folder,
-      * Alternatively, you can call `email_download /path/to/your/desired/cache/point`
-         * This custom cache directory will be created should it not already exist.
-   * If you would like to manually inspect the entire list of entry points the `setup.py` file created, see the keyword `entry_points` at the bottom of the `setup.py` file.
-      * This list is subject to change over time as further entry points are added.
+7. ~~We can now call the downloader command line entry point `email_download` to get the default implementation of the downlaoder.~~
+   	  * ~~The default implementation will download from the hard-coded email server, targeting the hard-coded account and password, and will cache the downloaded emails in the `*/EmailClassification/cache_files/` folder,~~
+      * ~~Alternatively, you can call `email_download /path/to/your/desired/cache/point`~~
+         * ~~This custom cache directory will be created should it not already exist.~~
+   * ~~If you would like to manually inspect the entire list of entry points the `setup.py` file created, see the keyword `entry_points` at the bottom of the `setup.py` file.~~
+      * ~~This list is subject to change over time as further entry points are added.~~
 
 
 ## Overview of application's executional flow
