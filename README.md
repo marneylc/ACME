@@ -5,6 +5,8 @@ ACME
 
 ***This readme is still in revision as of June 14, 2021... you've been warned***
 
+<h3 style="color:#ff0000">Is this red?</h3>
+
 This project aims to automate away the tediouse and technical details involved with:
 * collecting email from an imap mail server
 * Extracting the raw message text (or last message text if part of a thread) from the imap envlope structure
@@ -122,8 +124,7 @@ The application's execution flow consists of three phases:
    * Load imap envelope from email db then decompose it into header, message text, and possible associated message thread members
    * The character set (encoding) of a given message can vary with the senders email service, so we convert all messages to be UTF-8.
       + In doing this we make sure to handle the more common problem characters not naturally covered by the UTF-8 encoding. (\u2014, \u2018, \u2019, and \ufeff)
-
-<h3 style="color:#ff0000">Danger</h3>
+    
 
 Conceptual elements for possible classification tools:
 ===
