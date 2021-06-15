@@ -32,7 +32,7 @@ Learn about how you can share your Google data with apps to make your life easie
 You can review the type of account access a third party has as well as the Google services it has access to.
 1. Go to the [Security section of your Google Account](https://myaccount.google.com/security).
 2. Under “Third-party apps with account access,” select Manage third-party access.
-   * As you scroll down the window after following the link, you should see a section like this on the right:
+   * As you scroll down after following the above link, you should see a section like this on the right side of the window:
     ![what you should see](./readme_support_images/third_party_apps_image1.png)
 3. Select the app or service you want to review.
 
