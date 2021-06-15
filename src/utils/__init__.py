@@ -10,11 +10,13 @@ along with their chosen submodule.
 
 # builtin imports
 import gc
+import json
 import pickle
 from typing import Iterable
 from typing import List
 import sqlite3
 from textwrap import fill
+import os
 
 # third party lib imports
 from jsonpickle import encode as jp_encode, decode as jp_decode
@@ -24,7 +26,6 @@ from .pathing_defs import *
 from .custom_logger import get_logger,get_logging_file_target,DEBUGGING
 from .custom_logger import import_warnings_logger
 from .pathing_defs import cache_folder
-
 
 
 nltk_packages = Path(cache_folder.root).resolve().absolute().joinpath("nltk_packages")
@@ -132,8 +133,38 @@ plain_info_logger.info("\n".join(txt))
 
 ##
 # The root logger object for the project
-proj_base_info_logger = get_logger("EmailClassifier","root logger",level="INFO")
+proj_base_info_logger = get_logger("EmailClassifier",__name__+": root logger",level="INFO")
 
+#######################################################################################################################
+# check and optionally set environment variables for imap server login
+#######################################################################################################################
+cridentials_path = project_root_folder.joinpath("src/environ_vars.json")
+if cridentials_path.exists():
+    cridentials = json.loads(cridentials_path.read_text("utf-8"))
+else:
+    cridentials_path = project_root_folder.joinpath("src/template_environ_vars.json")
+    cridentials = json.loads(cridentials_path.read_text("utf-8"))
+    confirmation = ""
+    while confirmation.lower() not in {"yes", "y"}:
+        cridentials['EMAIL_ACCOUNT'] = input(
+            f"Please enter the target email account:\n\t{cridentials['__comment_email_account']}\nhere: ")
+        confirmation = input(f"You entered: {cridentials['EMAIL_ACCOUNT']}\n\tIs this correct? Y/[N]? ")
+    confirmation = ""
+    while confirmation.lower() not in {"yes", "y"}:
+        cridentials['PASSWORD'] = input(
+            f"Please enter account api password:\n\t{cridentials['__comment_password']}\nhere: ")
+        confirmation = input(f"You entered: {cridentials['PASSWORD']}\n\tIs this correct? Y/[N]? ")
+    confirmation = ""
+    while confirmation.lower() not in {"yes", "y"}:
+        cridentials['EMAIL_SERVER_HOST'] = input(
+            f"Please enter email server hose:\n\t{cridentials['__comment_host']}\nhere: ")
+        confirmation = input(f"You entered: {cridentials['EMAIL_SERVER_HOST']}\n\tIs this correct? Y/[N]? ")
+    cridentials_path = cridentials_path.with_name("environ_vars.json")
+    cridentials_path.write_text(json.dumps(cridentials,indent=4))
+
+GLOBAL_IMAP_EMAIL_ACCOUNT = cridentials["EMAIL_ACCOUNT"]
+GLOBAL_IMAP_PASSWORD = cridentials["PASSWORD"]
+GLOBAL_IMAP_HOST = cridentials["EMAIL_SERVER_HOST"]
 
 ##
 # A helper function for converting semantically meaningful, and detailed attribute keys into conveniently short

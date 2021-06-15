@@ -1,8 +1,49 @@
-# ACME: Automated Collection and Manipulation of Email
-Create order where chaos reigns, your inbox ;)
+ACME
+===
+## Automated Collection and Manipulation of Email
+*Create order where chaos reigns, your inbox ;)*
 
+This project aims to automate away the tediouse and technical details involved with 
 
-Isolated downloader demonstration steps:
+**This readme is still in revision as of June 14, 2021... you've been warned**
+
+Prerequisites to using this application
+---
+## Accessing emails
+The default configuration of this application is to use python's builtin `imaplib` package to access email. This means that in order for you to use this application on your own email account, you need to configure it to allow application access other than your normal browser access.
+
+For the time being, I've only ever done this with a gmail account, though it should theoretically be portable accross all imap email hosts that support imap protocol [`RFC822`](https://datatracker.ietf.org/doc/html/rfc822) (This should include most all modern email servers).
+
+### For Gmail accounts
+*As taken from google's help center, found here:* https://support.google.com/accounts/answer/3466521
+
+###### Manage third-party apps & services with access to your account
+To help you safely share your data, Google lets you give third-party apps and services access to different parts of your Google Account. Third-party apps and services are created by companies or developers that aren’t Google.
+
+For example, you may download an app that helps you schedule workouts with friends. This app may request access to your Google Calendar and Contacts to suggest times and friends for you to meet up with.
+
+###### Sharing your Google data with Apps
+Learn about how you can share your Google data with apps to make your life easier -- and what you can do to protect your personal information.
+
+###### Review what a third party can access
+You can review the type of account access a third party has as well as the Google services it has access to.
+1. Go to the [Security section of your Google Account](https://myaccount.google.com/security).
+2. Under “Third-party apps with account access,” select Manage third-party access.
+   * As you scroll down the window after following the link, you should see a section like this on the right:
+    ![./readme_support_images/third_party_apps_image1.png]
+3. Select the app or service you want to review.
+
+### For non-Gmail accounts
+ToDo: Experiment with non-gmail accounts and update this portion of the guide once a proper procedure is confirmed.
+
+## Accessing cached data
+### Database details
+We are using the python builtin package `sqlite3` to manage our databases where we cache persistent message and associated analysis data to disk.
+
+We are also maintaining 3 seperate databases over the course of the applications execution. We chose to do this in order to maintain a higher level of encapsulation between the major execution steps of the application. Thus ensuring the end user can easily treat this application as an adaptable toolkit that they can customize to their unique needs as they explore the data potentials of their email inbox.
+
+Installation instructions
+---
 
 1. install Anaconda's `Miniconda` console tool for minimalistic footprint virtual environment manager.
    * go to...
@@ -18,13 +59,12 @@ Isolated downloader demonstration steps:
 	|- src
 		|- code files and stuff...
 	|- .gitignore
-	|- downloader_environment.yml 	# this environment file gives minimal footprint for downloading and caching emails.
 	|- environment.yml     			# this environment file is for full classification pipeline
 	|- README.md
 	|- setup.py
 ```
 4. use conda to set up and activate your virtual environment.
-   * ` conda env create -f ./downloader_environment.yml`
+   * ` conda env create -f ./environment.yml`
    * `conda activate email_downlaoder_env`
       * optionally, you may inspect the packages available in the environment as follows:
          * `conda env export`
@@ -54,6 +94,20 @@ Isolated downloader demonstration steps:
          * This custom cache directory will be created should it not already exist.
    * If you would like to manually inspect the entire list of entry points the `setup.py` file created, see the keyword `entry_points` at the bottom of the `setup.py` file.
       * This list is subject to change over time as further entry points are added.
+
+
+## Overview of application's executional flow
+The application's execution flow consists of three phases:
+1. Email collection
+   * Open/create email caching database on disk named `sql3_email.db`   
+   * Download email header and generate unique message id
+   * If id not in DB, download full message envelope (imap defined message structure) and cache add it to DB under derived id.
+2. Message body parsing and extraction
+   * Open/create email caching database on disk named `sql3_message_body.db`  
+   * Open connection to `sql3_email.db` 
+   * Decompose message structure into header, body, and possible associated message thread
+   *  
+
 
 Conceptual elements for possible classification tools:
 ===

@@ -10,11 +10,13 @@ from email.parser import BytesParser
 from email.policy import default as policy_default
 from typing import List
 import concurrent.futures as cf
+import getpass
 
 # custom code imports
 from src.utils.custom_logger import get_logger
 from src.utils.pathing_defs import cache_folder
 from src import do_pickle, undo_pickle, DB_PATH_DICT, TABLE_NAMES
+from src import GLOBAL_IMAP_PASSWORD, GLOBAL_IMAP_EMAIL_ACCOUNT, GLOBAL_IMAP_HOST
 from src.email_caching.cache_class_defs import EmailItem, EmailDB
 
 body_structure_splitter = re.compile("\)\(")
@@ -104,12 +106,15 @@ def email_downloader(cache_root=None)->None:
         else:
             cache_location = cache_root
         info.info(f"Caching emails to:\n\t{cache_location}")
-        target_email = "luke.email.ryan.here@gmail.com"
+        try:
+            target_email = GLOBAL_IMAP_EMAIL_ACCOUNT or getpass.getuser()
+        except BaseException:
+            target_email = input("enter the target email address: ")
         # ToDo: HIGH PRIORITY --
         #   Instead of saving the password inside the file, we should required the user to enter the password correctly
         #   within some limited number of attempts.
-        bad_practice = "oferoyrtvimlhqdd"
-        imap_url = "imap.gmail.com"
+        login_password = GLOBAL_IMAP_PASSWORD or getpass.getpass("Enter the api password for the target email account now:")
+        imap_url = GLOBAL_IMAP_HOST
         # emails_dir = cache_location.parent.joinpath("emails")
         # emails_dir.mkdir(parents=True,exist_ok=True)
         bytes_parser = BytesParser(policy=policy_default)
@@ -121,7 +126,7 @@ def email_downloader(cache_root=None)->None:
             main_curs, main_curs_pos = db.cursor
             existing_keys = set(v[0] for v in main_curs.execute(f"SELECT id FROM {email_table_name[0]};").fetchall())
             with imaplib.IMAP4_SSL(imap_url) as imap_con:
-                imap_con.login(target_email, bad_practice)
+                imap_con.login(target_email, login_password)
                 imap_con.select("INBOX")  # defaults to selecting "INBOX"
                 inbox_status = imap_con.status('INBOX', '(MESSAGES RECENT UIDNEXT UIDVALIDITY UNSEEN)')
                 info.info(f"{inbox_status=}")
@@ -130,7 +135,7 @@ def email_downloader(cache_root=None)->None:
                 # data = imap_con.search(None,"FROM","petersryan84@gmail.com")[1]
                 mails = (elem for d in data_ids for elem in d.split())
             with cf.ThreadPoolExecutor() as tpe:
-                ftrs = [tpe.submit(_threadable_logic, imap_url, target_email, bad_practice, mail_id, bytes_parser, existing_keys)
+                ftrs = [tpe.submit(_threadable_logic, imap_url, target_email, login_password, mail_id, bytes_parser, existing_keys)
                         for mail_id in mails]
                 for ftr in cf.as_completed(ftrs):
                     if not ftr.exception():

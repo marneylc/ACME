@@ -1,0 +1,67 @@
+@inbook{10.1145/3290605.3300604,
+author = {Park, Soya and Zhang, Amy X. and Murray, Luke S. and Karger, David R.},
+title = {Opportunities for Automating Email Processing: A Need-Finding Study},
+year = {2019},
+isbn = {9781450359702},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3290605.3300604},
+abstract = {
+	Email management consumes significant effort from senders and recipients. Some of this work might be automatable. 
+	We performed a mixed-methods need-finding study to learn: (i) what sort of automatic email handling users want, 
+	and (ii) what kinds of information and computation are needed to support that automation. Our investigation 
+	included a design workshop to identify categories of needs, a survey to better understand those categories, 
+	and a classification of existing email automation software to determine which needs have been addressed. 
+	Our results highlight the need for: a richer data model for rules, more ways to manage attention, 
+	leveraging internal and external email context, complex processing such as response aggregation, and affordances 
+	for senders. To further investigate our findings, we developed a platform for authoring small scripts over a user's 
+	inbox. Of the automations found in our studies, half are impossible in popular email clients, motivating new design 
+	directions.},
+booktitle = {Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems},
+pages = {1–12},
+numpages = {12}
+}
+
+Soya Park, Amy X. Zhang, Luke S. Murray, and David R. Karger. 2019. Opportunities for Automating Email Processing: A Need-Finding Study. Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems. Association for Computing Machinery, New York, NY, USA, Paper 374, 1–12. DOI:https://doi.org/10.1145/3290605.3300604
+(Park, Zhang, Murray, and Karger. 2019)
+
+
+
+@inproceedings{10.1145/3289600.3291028,
+author = {Sarrafzadeh, Bahareh and Hassan Awadallah, Ahmed and Lin, Christopher H. and Lee, Chia-Jung and Shokouhi, Milad and Dumais, Susan T.},
+title = {Characterizing and Predicting Email Deferral Behavior},
+year = {2019},
+isbn = {9781450359405},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3289600.3291028},
+doi = {10.1145/3289600.3291028},
+abstract = {
+	Email triage involves going through unhandled emails and deciding what to do with them. This familiar process 
+	can become increasingly challenging as the number of unhandled email grows. During a triage session, users commonly defer 
+	handling emails that they cannot immediately deal with to later. These deferred emails, are often related to tasks that 
+	are postponed until the user has more time or the right information to deal with them. In this paper, through qualitative 
+	interviews and a large-scale log analysis, we study when and what enterprise email users tend to defer. We found that users
+	are more likely to defer emails when handling them involves replying, reading carefully, or clicking on links and attachments.
+ 	We also learned that the decision to defer emails depends on many factors such as user's workload and the importance of the
+  	sender. Our qualitative results suggested that deferring is very common, and our quantitative log analysis confirms that
+   	12% of triage sessions and 16% of daily active users had at least one deferred email on weekdays. We also discuss
+   	several deferral strategies such as marking emails as unread and flagging that are reported by our interviewees, and 
+   	illustrate how such patterns can be also observed in user logs. Inspired by the characteristics of deferred emails and 
+   	contextual factors involved in deciding if an email should be deferred, we train a classifier for predicting whether a 
+   	recently triaged email is actually deferred. Our experimental results suggests that deferral can be classified with 
+   	modest effectiveness. Overall, our work provides novel insights about how users handle their emails and how deferral 
+   	can be modeled.},
+booktitle = {Proceedings of the Twelfth ACM International Conference on Web Search and Data Mining},
+pages = {627–635},
+numpages = {9},
+keywords = {triage, intelligent email client, users behavior modeling, intelligent assistant, deferral, mixed methods approaches, email management, task management},
+location = {Melbourne VIC, Australia},
+series = {WSDM '19}
+}
+
+Bahareh Sarrafzadeh, Ahmed Hassan Awadallah, Christopher H. Lin, Chia-Jung Lee, Milad Shokouhi, and Susan T. Dumais. 2019. Characterizing and Predicting Email Deferral Behavior. In <i>Proceedings of the Twelfth ACM International Conference on Web Search and Data Mining</i> (<i>WSDM '19</i>). Association for Computing Machinery, New York, NY, USA, 627–635. DOI:https://doi.org/10.1145/3289600.3291028
+(Sarrafzadeh, Awadallah, Lin, Lee, Shokouhi, and Dumais. 2019)
+
+Scerri, Simon & Gossen, Gerhard & Davis, Brian & Handschuh, Siegfried. (2010). Classifying Action Items for Semantic Email.
+Email can be considered as a virtual working enviro nment in which users are constantly struggling to m anage the vast amount of exchanged data. Although most of this data belongs to well-defined workflows, these are implicit and l argely unsupported by existing email clients. Semanta provides this suppo rt by enabling Semantic Email - email enhanced with machine-processable metadata about specific types of email Action Items (e.g. Task Assignment, Meeting Proposal ). In the larger picture, these items form part of ad-hoc workflows (e.g. Task Delegation, Meeting Scheduling ). Semanta is faced with a knowledge-acquisition bottleneck, as users cannot be expected to annotate each action it em, and their automatic recognition proves difficul t. This paper focuses on applying computationally treatable aspects of speec h act theory for the classification of email action items. A rule-based classification model is employed, based on the pres ence or form of a number of linguistic features. Th e technology's evaluation suggests that whereas full automation is not feasib le, the results are good enough to be presented as suggestions for the user to review. In addition the rule-based system will boot strap a machine learning system that is currently i n development, to generate the initial training sets which are then improved throu gh the user's reviewing.
