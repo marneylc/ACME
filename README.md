@@ -123,7 +123,7 @@ The application's execution flow consists of three phases:
    * The character set (encoding) of a given message can vary with the senders email service, so we convert all messages to be UTF-8.
       + In doing this we make sure to handle the more common problem characters not naturally covered by the UTF-8 encoding. (\u2014, \u2018, \u2019, and \ufeff)
 
-<span color="red">red</span>
+<h3 style="color:#ff0000">Danger</h3>
 
 Conceptual elements for possible classification tools:
 ===
