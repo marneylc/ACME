@@ -119,9 +119,11 @@ The application's execution flow consists of three phases:
 2. Message body parsing and extraction
    * Open/create email caching database on disk named `sql3_message_body.db`  
    * Open connection to `sql3_email.db` 
-   * Decompose message structure into header, body, and possible associated message thread
-   *  
+   * Load imap envelope from email db then decompose it into header, message text, and possible associated message thread members
+   * The character set (encoding) of a given message can vary with the senders email service, so we convert all messages to be UTF-8.
+      + In doing this we make sure to handle the more common problem characters not naturally covered by the UTF-8 encoding. (\u2014, \u2018, \u2019, and \ufeff)
 
+<span color="red">red</span>
 
 Conceptual elements for possible classification tools:
 ===
