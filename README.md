@@ -33,7 +33,7 @@ You can review the type of account access a third party has as well as the Googl
 1. Go to the [Security section of your Google Account](https://myaccount.google.com/security).
 2. Under “Third-party apps with account access,” select Manage third-party access.
    * As you scroll down the window after following the link, you should see a section like this on the right:
-    ![./readme_support_images/third_party_apps_image1.png]
+    ![what you should see](./readme_support_images/third_party_apps_image1.png)
 3. Select the app or service you want to review.
 
 ### For non-Gmail accounts
