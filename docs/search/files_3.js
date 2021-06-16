@@ -1,9 +1,4 @@
 var searchData=
 [
-  ['database_5fconsolidation_2epy_520',['database_consolidation.py',['../database__consolidation_8py.html',1,'']]],
-  ['db_5fclass_5fdefs_2epy_521',['db_class_defs.py',['../db__class__defs_8py.html',1,'']]],
-  ['db_5ferd_2epy_522',['db_erd.py',['../db__erd_8py.html',1,'']]],
-  ['debugging_5ftools_2epy_523',['debugging_tools.py',['../debugging__tools_8py.html',1,'']]],
-  ['dodo_2epy_524',['dodo.py',['../dodo_8py.html',1,'']]],
-  ['downloader_2epy_525',['downloader.py',['../downloader_8py.html',1,'']]]
+  ['extraction_5ffunctions_2epy_523',['extraction_functions.py',['../body__extraction_2extraction__functions_8py.html',1,'(Global Namespace)'],['../lemma__extraction_2extraction__functions_8py.html',1,'(Global Namespace)']]]
 ];

@@ -25,7 +25,6 @@
 var NAVTREE =
 [
   [ "ACME", "index.html", [
-    [ "backlog", "md_backlog.html", null ],
     [ "ACME", "md__r_e_a_d_m_e.html", [
       [ "Automated Collection and Manipulation of Email", "md__r_e_a_d_m_e.html#autotoc_md0", null ],
       [ "Prerequisites to using this application", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
@@ -81,8 +80,8 @@ var NAVTREEINDEX =
 "____init_____8py.html",
 "classsrc_1_1email__caching_1_1cache__class__defs_1_1_email_d_b.html#a8149995711469aa297f60bca5c1667f1",
 "custom__logger_8py.html#acc086c09de5724a4aa34815e9af8d557",
-"namespacesetup.html#aedf461ec52a946bda975938ba0b93ec0",
-"namespacesrc_1_1utils_1_1backup.html#a997c3eb822627e0efb8f40f5ffd8ad0a"
+"namespacesetup.html#afc13124aa5c0124e84e1d965e3f4b0fb",
+"namespacesrc_1_1utils_1_1backup.html#a9c66a014a538418be7582f1b7e8dde75"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

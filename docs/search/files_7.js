@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['parser_2epy_530',['parser.py',['../parser_8py.html',1,'']]],
-  ['pathing_5fdefs_2epy_531',['pathing_defs.py',['../backup_2pathing__defs_8py.html',1,'(Global Namespace)'],['../pathing__defs_8py.html',1,'(Global Namespace)']]]
+  ['readme_2emd_529',['README.md',['../_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2body__extraction_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2db__tools_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2email__caching_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2eralchemy_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2lemma__extraction_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)']]]
 ];

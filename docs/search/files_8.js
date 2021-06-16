@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['readme_2emd_532',['README.md',['../_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2body__extraction_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2db__tools_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2email__caching_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2eralchemy_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../src_2lemma__extraction_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)']]]
+  ['setup_2epy_530',['setup.py',['../setup_8py.html',1,'']]],
+  ['sqla_2epy_531',['sqla.py',['../sqla_8py.html',1,'']]]
 ];
