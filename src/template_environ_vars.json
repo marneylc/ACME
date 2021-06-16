@@ -1,5 +1,5 @@
 {
-  "__comment_email_account": "EMAIL_ACCOUNT should be set to your target email account; E.G.: joe_example@example.com;\nPASSWORD should be a hex string that you can get through you email host api",
+  "__comment_email_account": "EMAIL_ACCOUNT should be set to your target email account; E.G.: joe_example@example.com",
   "EMAIL_ACCOUNT": "",
   "__comment_password": "PASSWORD should be a hex string that you can get through you email host api; it will looke something like: vutfjdjwvxcqzoty",
   "PASSWORD":"",

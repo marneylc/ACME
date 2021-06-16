@@ -6,11 +6,13 @@ ACME
 ***This readme is still in revision as of June 14, 2021... you've been warned***
 
 This project aims to automate away the tediouse and technical details involved with:
-* Collecting email from an imap mail server
+* Collecting email from your mail server -- done using imap (Internet Access Message Protocol), protocol [RFC822](https://datatracker.ietf.org/doc/html/rfc822) 
 * Extracting the raw message text (or last message text if part of a thread) from the imap envlope structure
 * Applying basic NLTK tools to the raw message text to produce lemmatized word-bags (a csr_matrix from the scikit-learn package)
 
-I also aim to present this project as a sort of open-topped toolkit. Meaning it should allow users to grab only the sub-modules they need in order do any one of the previously listed tasks.
+I also aim to present this project as a sort of open-topped toolkit. Meaning it should allow users to grab only the sub-modules they need in order do any one of the above listed tasks. 
+
+Ultimately, code in this repository is meant to reduce the number of steps the user (you) need to toake before you can get to the more interesting work of creating a custom tool for automated message classification, or simply conducting a personal analysis on how you communicate with friends and colleagues.  
 
 This project has become a sort of hobby project for me, so I will continue to hack at it until I feel it has matured to the point that:
 * A user can easily import this project from their own code and access only the tools they need
@@ -27,25 +29,37 @@ The default configuration of this application is to use python's builtin `imapli
 For the time being, I've only ever done this with a gmail account, though it should theoretically be portable accross all imap email hosts that support the imap protocol [`RFC822`](https://datatracker.ietf.org/doc/html/rfc822) (This should include most all modern email servers).
 
 ### For Gmail accounts
-*As taken from google's help center, found here:* https://support.google.com/accounts/answer/3466521
+*As taken from google's help center, found here:* https://support.google.com/accounts/answer/185833
 
-##### Manage third-party apps & services with access to your account
-To help you safely share your data, Google lets you give third-party apps and services access to different parts of your Google Account. Third-party apps and services are created by companies or developers that aren’t Google.
+#### [Sign in with App Passwords]()
+**Tip:** App Passwords aren’t recommended and are unnecessary in most cases. To help keep your account secure, use "Sign in with Google" to connect apps to your Google Account. 
 
-For example, you may download an app that helps you schedule workouts with friends. This app may request access to your Google Calendar and Contacts to suggest times and friends for you to meet up with.
+An App Password is a 16-digit passcode that gives a less secure app or device permission to access your Google Account. App Passwords can only be used with accounts that have 2-Step Verification turned on.
 
-##### Sharing your Google data with Apps
-Learn about how you can share your Google data with apps to make your life easier -- and what you can do to protect your personal information.
+#### [When to use App Passwords]()
+**Tip:** iPhones and iPads with iOS 11 or up don’t require App Passwords. Instead use “Sign in with Google.”
 
+If the app doesn’t offer “Sign in with Google,” you can either:
 
+* Use App Passwords
+* Switch to a more secure app or device
 
-###### Review what a third party can access
-You can review the type of account access a third party has as well as the Google services it has access to.
-1. Go to the [Security section of your Google Account](https://myaccount.google.com/security).
-2. Under “Third-party apps with account access,” select Manage third-party access.
-   * As you scroll down after following the above link, you should see a section like this on the right side of the window:
-    ![what you should see](./readme_support_images/third_party_apps_image1.png)
-3. Select the app or service you want to review.
+#### Create & use App Passwords
+If you use [2-Step-Verification](https://support.google.com/accounts/answer/185839) and get a "password incorrect" error when you sign in, you can try to use an App Password.
+   * When initially creating this project, I had to use an App Password. A ToDo item for this project is to investigate the steps for registering a custom app for use with Google's gmail api.
+
+1. Go to your [Google Account](https://myaccount.google.com/).
+1. Select Security.
+1. Under "Signing in to Google," select App Passwords. You may need to sign in. If you don’t have this option, it might be because:
+   1. 2-Step Verification is not set up for your account.
+   1. 2-Step Verification is only set up for security keys.
+   1. Your account is through work, school, or other organization.
+   1. You turned on Advanced Protection.
+1. At the bottom, choose Select app and choose the app you using and then Select device and choose the device you’re using and then Generate.
+1. Follow the instructions to enter the App Password. The App Password is the 16-character code in the yellow bar on your device.
+1. Tap Done.
+
+Tip: Most of the time, you’ll only have to enter an App Password once per app or device, so don’t worry about memorizing it.
 
 ### For non-Gmail accounts
 ToDo: Experiment with non-gmail accounts and update this portion of the guide once a proper procedure is confirmed.
