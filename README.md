@@ -5,10 +5,8 @@ ACME
 
 ***This readme is still in revision as of June 14, 2021... you've been warned***
 
-<h3 style="color:#ff0000">Is this red?</h3>
-
 This project aims to automate away the tediouse and technical details involved with:
-* collecting email from an imap mail server
+* Collecting email from an imap mail server
 * Extracting the raw message text (or last message text if part of a thread) from the imap envlope structure
 * Applying basic NLTK tools to the raw message text to produce lemmatized word-bags (a csr_matrix from the scikit-learn package)
 
@@ -19,26 +17,26 @@ This project has become a sort of hobby project for me, so I will continue to ha
 * There is a clear and thoroughly defined process for a community to extend the feature set of the project
 * There is a clear and thoroughly defined process for guiding a user on how to supplement their own code in place of any sub-modules provided in this project.
 
+#### [Project documentation](https://ryancpeters.github.io/ACME/) -- generated using doxygen
 
 Prerequisites to using this application
 ---
 ## Accessing emails
 The default configuration of this application is to use python's builtin `imaplib` package to access email. This means that in order for you to use this application on your own email account, you need to configure it to allow application access other than your normal browser access.
 
-For the time being, I've only ever done this with a gmail account, though it should theoretically be portable accross all imap email hosts that support imap protocol [`RFC822`](https://datatracker.ietf.org/doc/html/rfc822) (This should include most all modern email servers).
+For the time being, I've only ever done this with a gmail account, though it should theoretically be portable accross all imap email hosts that support the imap protocol [`RFC822`](https://datatracker.ietf.org/doc/html/rfc822) (This should include most all modern email servers).
 
 ### For Gmail accounts
 *As taken from google's help center, found here:* https://support.google.com/accounts/answer/3466521
 
-###### Manage third-party apps & services with access to your account
+##### Manage third-party apps & services with access to your account
 To help you safely share your data, Google lets you give third-party apps and services access to different parts of your Google Account. Third-party apps and services are created by companies or developers that aren’t Google.
 
 For example, you may download an app that helps you schedule workouts with friends. This app may request access to your Google Calendar and Contacts to suggest times and friends for you to meet up with.
 
-###### Sharing your Google data with Apps
+##### Sharing your Google data with Apps
 Learn about how you can share your Google data with apps to make your life easier -- and what you can do to protect your personal information.
-=======
-### [Project documentation:](https://ryancpeters.github.io/ACME/)
+
 
 
 ###### Review what a third party can access
