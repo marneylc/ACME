@@ -99,305 +99,336 @@ $(document).ready(function(){initNavTree('utils_2____init_____8py_source.html','
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"># builtin imports</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">import</span> gc</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">import</span> pickle</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">from</span> typing <span class="keyword">import</span> Iterable</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">from</span> typing <span class="keyword">import</span> List</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">import</span> sqlite3</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">from</span> textwrap <span class="keyword">import</span> fill</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"># third party lib imports</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">from</span> jsonpickle <span class="keyword">import</span> encode <span class="keyword">as</span> jp_encode, decode <span class="keyword">as</span> jp_decode</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"># project specific custom code imports</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">from</span> .pathing_defs <span class="keyword">import</span> *</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">from</span> .custom_logger <span class="keyword">import</span> get_logger,get_logging_file_target,DEBUGGING</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">from</span> .custom_logger <span class="keyword">import</span> import_warnings_logger</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">from</span> .pathing_defs <span class="keyword">import</span> cache_folder</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">import</span> json</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">import</span> pickle</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">from</span> typing <span class="keyword">import</span> Iterable</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">from</span> typing <span class="keyword">import</span> List</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">import</span> sqlite3</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">from</span> textwrap <span class="keyword">import</span> fill</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">import</span> os</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"># third party lib imports</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">from</span> jsonpickle <span class="keyword">import</span> encode <span class="keyword">as</span> jp_encode, decode <span class="keyword">as</span> jp_decode</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"># project specific custom code imports</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">from</span> .pathing_defs <span class="keyword">import</span> *</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">from</span> .custom_logger <span class="keyword">import</span> get_logger,get_logging_file_target,DEBUGGING</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">from</span> .custom_logger <span class="keyword">import</span> import_warnings_logger</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">from</span> .pathing_defs <span class="keyword">import</span> cache_folder</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a0613bfb1166cdb816b35a98d7f44341d">   30</a></span>&#160;nltk_packages = Path(cache_folder.root).resolve().absolute().joinpath(<span class="stringliteral">&quot;nltk_packages&quot;</span>)</div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a5512f15dbcf9b63df47324adbc07b1ce">   31</a></span>&#160;nltk_path_str = str(nltk_packages)</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keywordflow">try</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">import</span> nltk</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">from</span> <a class="code" href="namespacenltk_1_1downloader.html">nltk.downloader</a> <span class="keyword">import</span> _downloader <span class="keyword">as</span> nltk_loader</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordflow">if</span> <span class="keywordflow">not</span> (nltk_packages.exists() <span class="keywordflow">and</span> any(nltk_packages.iterdir())):</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#ac1c7677427edaf49774632c7b8c12c6b">   36</a></span>&#160;        nltk_packages.mkdir(parents=<span class="keyword">True</span>,exist_ok=<span class="keyword">True</span>)</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        nltk.data.path.insert(0,nltk_path_str)</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a463442797e7985e0b5ec2b52bd2d8131">   38</a></span>&#160;        nltk.download(download_dir=nltk_path_str)</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="comment"># nltk_loader.download(&quot;all&quot;, download_dir=str(nltk_packages),quiet=True)</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="comment"># nltk_loader.download(&quot;wordnet&quot;,download_dir=nltk_path_str,quiet=True)</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="comment"># nltk_loader.download(&quot;words&quot;,download_dir=nltk_path_str,quiet=True)</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ac032ae4e66e4ef6b037f7fa0ec8747f6">import_warnings_logger</a>(f<span class="stringliteral">&quot;created the nltk package folder at: \n\t{nltk.data.path}&quot;</span>)</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">else</span>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        nltk.data.path.append(str(nltk_packages))</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keywordflow">except</span> ImportError:</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#ac3fcffcd5173e5dfa5d607766803697e">   46</a></span>&#160;    nltk = <span class="keywordtype">None</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a1ac6353e0fdf9b334b08ac79e4c1c654">   47</a></span>&#160;    nltk_loader = <span class="keywordtype">None</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a68078d465891c703f7ab0f35120ccbbd">   48</a></span>&#160;    <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ac032ae4e66e4ef6b037f7fa0ec8747f6">import_warnings_logger</a>(f<span class="stringliteral">&quot;The NLTK library isn&#39;t available on this machine, no NLP tools will be enabled.&quot;</span>,exc_info=<span class="keyword">True</span>)</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment"># Subclassed the Downloader provided by nltk to give better control over the garbage console output the</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"># default implementation forced on us.</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html">   53</a></span>&#160;<span class="keyword">class </span><a class="code" href="classsrc_1_1utils_1_1_polite_downloader.html">PoliteDownloader</a>(nltk.downloader.Downloader):</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="stringliteral">    Subclassed the Downloader provided by nltk to give better control over the garbage console output the</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="stringliteral">    default implementation forced on us.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="stringliteral">    &quot;&quot;&quot;</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#ae72f45cc158240b2d4761aad3c9f6df9">   58</a></span>&#160;    ESC_SEQ = <span class="stringliteral">&quot;\033[&quot;</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a32c98d04caf1c4c2149b3f32bda63e7b">   59</a></span>&#160;    charc = 90  <span class="comment"># charcoal</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a41589ff6cb94cce591493aae37740caa">   60</a></span>&#160;    purp = 35  <span class="comment"># purple</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#abdaf4449b79d20c0ad6935c7cf3e8db9">   61</a></span>&#160;    green = 32  <span class="comment"># green -- might be just my eyes, but green(32) and yellow(33) look almost identical</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a3934fbec4a89b4d4134c69d5ae9f4b14">   62</a></span>&#160;    dull_cyan = 36  <span class="comment"># dull-cyan</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#ad289ed16cc44cffdd7f62623d38ae4be">   63</a></span>&#160;    bright_purp = 95  <span class="comment"># bright-purple</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#ab004d2f76f19adf58fca7b360e5a9f69">   64</a></span>&#160;    bright_red = 91  <span class="comment"># bright-red</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#af1f9722babb905a60e334671fcd93bb9">   65</a></span>&#160;    COLOR_RESET = ESC_SEQ + <span class="stringliteral">&quot;0m&quot;</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#ad589cea82a7d68becec1adc33d6509f8">   66</a></span>&#160;    formatted_green = f<span class="stringliteral">&quot;{ESC_SEQ}1;{green}m&quot;</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a78deb32b461aeb69f9a312f2d5ee8ea7">   67</a></span>&#160;    formatted_cyan = f<span class="stringliteral">&quot;{ESC_SEQ}1;{dull_cyan}m&quot;</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#affde4b911e0da3f207d88a6691748092">   68</a></span>&#160;    formatted_charc = f<span class="stringliteral">&quot;{ESC_SEQ}1;{charc}m&quot;</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a3591db36638d351ae012a9b0293745b0">   69</a></span>&#160;    formatted_red = f<span class="stringliteral">&quot;{ESC_SEQ}1;{bright_red}m&quot;</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a75621f70640ca6f1c7ff09badd939acf">   70</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_polite_downloader.html#a75621f70640ca6f1c7ff09badd939acf">list</a>(self, download_dir=None, show_packages=True, show_collections=True, header=True,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;             skip_installed=False, max_line_width:int=120, color_coded:bool=<span class="keyword">False</span>, skip_not_installed:bool=<span class="keyword">True</span>):</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        txt = []</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">if</span> download_dir <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            download_dir = self._download_dir</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            txt.append(<span class="stringliteral">&quot;Using default data directory (%s)&quot;</span> % download_dir)</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keywordflow">if</span> header:</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            breaker = <span class="stringliteral">&quot;=&quot;</span> * (26 + len(self._url))</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            txt.append(breaker)</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            txt.append(<span class="stringliteral">&quot; Data server index for &lt;%s&gt;&quot;</span> % self._url)</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            txt.append(breaker)</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        stale = partial = <span class="keyword">False</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keywordflow">if</span> color_coded:</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;            prefix_states = {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                        self.INSTALLED: f<span class="stringliteral">&quot;{self.formatted_green}[*]{self.COLOR_RESET}&quot;</span>,</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                        self.STALE: f<span class="stringliteral">&quot;{self.formatted_charc}[-]{self.COLOR_RESET}&quot;</span>,<span class="comment">#&quot;[-]&quot;,</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                        self.PARTIAL: f<span class="stringliteral">&quot;{self.formatted_cyan}[P]{self.COLOR_RESET}&quot;</span>,<span class="comment">#&quot;[P]&quot;,</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                        self.NOT_INSTALLED: f<span class="stringliteral">&quot;{self.formatted_red}[ ]{self.COLOR_RESET}&quot;</span>,<span class="comment">#&quot;[ ]&quot;,</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                    }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordflow">else</span>:</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            prefix_states = {</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                        self.INSTALLED: <span class="stringliteral">&quot;[*]&quot;</span>,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                        self.STALE: <span class="stringliteral">&quot;[-]&quot;</span>,</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                        self.PARTIAL: <span class="stringliteral">&quot;[P]&quot;</span>,</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                        self.NOT_INSTALLED: <span class="stringliteral">&quot;[ ]&quot;</span>,</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                    }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        categories = []</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">if</span> show_packages:</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            categories.append(<span class="stringliteral">&quot;packages&quot;</span>)</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="keywordflow">if</span> show_collections:</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            categories.append(<span class="stringliteral">&quot;collections&quot;</span>)</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <span class="keywordflow">for</span> category <span class="keywordflow">in</span> categories:</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;            txt.append(<span class="stringliteral">&quot;%s:&quot;</span> % category.capitalize())</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            <span class="keywordflow">for</span> info <span class="keywordflow">in</span> sorted(getattr(self, category)(), key=str):</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                status = self.status(info, download_dir)</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                <span class="keywordflow">if</span> (status == self.INSTALLED <span class="keywordflow">and</span> skip_installed) <span class="keywordflow">or</span> (status == self.NOT_INSTALLED <span class="keywordflow">and</span> skip_not_installed):</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                    <span class="keywordflow">continue</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                <span class="keywordflow">if</span> status == self.STALE:</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                    stale = <span class="keyword">True</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                <span class="keywordflow">if</span> status == self.PARTIAL:</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                    partial = <span class="keyword">True</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                prefix = prefix_states[status]</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                name = fill(</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                    <span class="stringliteral">&quot;-&quot;</span> * 27 + (info.name <span class="keywordflow">or</span> info.id), max_line_width, subsequent_indent=27 * <span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                )[27:]</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                txt.append(f<span class="stringliteral">&quot;  {prefix} {info.id.ljust(30,&#39;.&#39;)} {name}&quot;</span>)</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;            txt.append(<span class="stringliteral">&quot;&quot;</span>)</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        msg = f<span class="stringliteral">&quot;({prefix_states[self.INSTALLED]} marks installed packages&quot;</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">if</span> stale:</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            msg += f<span class="stringliteral">&quot;; {prefix_states[self.STALE]} marks out-of-date or corrupt packages&quot;</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keywordflow">if</span> partial:</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            msg += f<span class="stringliteral">&quot;; {prefix_states[self.PARTIAL]} marks partially installed collections&quot;</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        txt.append(fill(msg + <span class="stringliteral">&quot;)&quot;</span>, subsequent_indent=<span class="stringliteral">&quot; &quot;</span>, width=max_line_width))</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        <span class="keywordflow">return</span> txt</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a0613bfb1166cdb816b35a98d7f44341d">   31</a></span>&#160;nltk_packages = Path(cache_folder.root).resolve().absolute().joinpath(<span class="stringliteral">&quot;nltk_packages&quot;</span>)</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a5512f15dbcf9b63df47324adbc07b1ce">   32</a></span>&#160;nltk_path_str = str(nltk_packages)</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keywordflow">try</span>:</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">import</span> nltk</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">from</span> <a class="code" href="namespacenltk_1_1downloader.html">nltk.downloader</a> <span class="keyword">import</span> _downloader <span class="keyword">as</span> nltk_loader</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">if</span> <span class="keywordflow">not</span> (nltk_packages.exists() <span class="keywordflow">and</span> any(nltk_packages.iterdir())):</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#ac1c7677427edaf49774632c7b8c12c6b">   37</a></span>&#160;        nltk_packages.mkdir(parents=<span class="keyword">True</span>,exist_ok=<span class="keyword">True</span>)</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        nltk.data.path.insert(0,nltk_path_str)</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a463442797e7985e0b5ec2b52bd2d8131">   39</a></span>&#160;        nltk.download(download_dir=nltk_path_str)</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="comment"># nltk_loader.download(&quot;all&quot;, download_dir=str(nltk_packages),quiet=True)</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="comment"># nltk_loader.download(&quot;wordnet&quot;,download_dir=nltk_path_str,quiet=True)</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="comment"># nltk_loader.download(&quot;words&quot;,download_dir=nltk_path_str,quiet=True)</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ac032ae4e66e4ef6b037f7fa0ec8747f6">import_warnings_logger</a>(f<span class="stringliteral">&quot;created the nltk package folder at: \n\t{nltk.data.path}&quot;</span>)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        nltk.data.path.append(str(nltk_packages))</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordflow">except</span> ImportError:</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#ac3fcffcd5173e5dfa5d607766803697e">   47</a></span>&#160;    nltk = <span class="keywordtype">None</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a1ac6353e0fdf9b334b08ac79e4c1c654">   48</a></span>&#160;    nltk_loader = <span class="keywordtype">None</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a68078d465891c703f7ab0f35120ccbbd">   49</a></span>&#160;    <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ac032ae4e66e4ef6b037f7fa0ec8747f6">import_warnings_logger</a>(f<span class="stringliteral">&quot;The NLTK library isn&#39;t available on this machine, no NLP tools will be enabled.&quot;</span>,exc_info=<span class="keyword">True</span>)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"># Subclassed the Downloader provided by nltk to give better control over the garbage console output the</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment"># default implementation forced on us.</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html">   54</a></span>&#160;<span class="keyword">class </span><a class="code" href="classsrc_1_1utils_1_1_polite_downloader.html">PoliteDownloader</a>(nltk.downloader.Downloader):</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="stringliteral">    Subclassed the Downloader provided by nltk to give better control over the garbage console output the</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="stringliteral">    default implementation forced on us.</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="stringliteral">    &quot;&quot;&quot;</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#ae72f45cc158240b2d4761aad3c9f6df9">   59</a></span>&#160;    ESC_SEQ = <span class="stringliteral">&quot;\033[&quot;</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a32c98d04caf1c4c2149b3f32bda63e7b">   60</a></span>&#160;    charc = 90  <span class="comment"># charcoal</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a41589ff6cb94cce591493aae37740caa">   61</a></span>&#160;    purp = 35  <span class="comment"># purple</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#abdaf4449b79d20c0ad6935c7cf3e8db9">   62</a></span>&#160;    green = 32  <span class="comment"># green -- might be just my eyes, but green(32) and yellow(33) look almost identical</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a3934fbec4a89b4d4134c69d5ae9f4b14">   63</a></span>&#160;    dull_cyan = 36  <span class="comment"># dull-cyan</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#ad289ed16cc44cffdd7f62623d38ae4be">   64</a></span>&#160;    bright_purp = 95  <span class="comment"># bright-purple</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#ab004d2f76f19adf58fca7b360e5a9f69">   65</a></span>&#160;    bright_red = 91  <span class="comment"># bright-red</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#af1f9722babb905a60e334671fcd93bb9">   66</a></span>&#160;    COLOR_RESET = ESC_SEQ + <span class="stringliteral">&quot;0m&quot;</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#ad589cea82a7d68becec1adc33d6509f8">   67</a></span>&#160;    formatted_green = f<span class="stringliteral">&quot;{ESC_SEQ}1;{green}m&quot;</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a78deb32b461aeb69f9a312f2d5ee8ea7">   68</a></span>&#160;    formatted_cyan = f<span class="stringliteral">&quot;{ESC_SEQ}1;{dull_cyan}m&quot;</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#affde4b911e0da3f207d88a6691748092">   69</a></span>&#160;    formatted_charc = f<span class="stringliteral">&quot;{ESC_SEQ}1;{charc}m&quot;</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a3591db36638d351ae012a9b0293745b0">   70</a></span>&#160;    formatted_red = f<span class="stringliteral">&quot;{ESC_SEQ}1;{bright_red}m&quot;</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_polite_downloader.html#a75621f70640ca6f1c7ff09badd939acf">   71</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_polite_downloader.html#a75621f70640ca6f1c7ff09badd939acf">list</a>(self, download_dir=None, show_packages=True, show_collections=True, header=True,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;             skip_installed=False, max_line_width:int=120, color_coded:bool=<span class="keyword">False</span>, skip_not_installed:bool=<span class="keyword">True</span>):</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        txt = []</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">if</span> download_dir <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            download_dir = self._download_dir</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            txt.append(<span class="stringliteral">&quot;Using default data directory (%s)&quot;</span> % download_dir)</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keywordflow">if</span> header:</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            breaker = <span class="stringliteral">&quot;=&quot;</span> * (26 + len(self._url))</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            txt.append(breaker)</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            txt.append(<span class="stringliteral">&quot; Data server index for &lt;%s&gt;&quot;</span> % self._url)</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            txt.append(breaker)</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        stale = partial = <span class="keyword">False</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordflow">if</span> color_coded:</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            prefix_states = {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                        self.INSTALLED: f<span class="stringliteral">&quot;{self.formatted_green}[*]{self.COLOR_RESET}&quot;</span>,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                        self.STALE: f<span class="stringliteral">&quot;{self.formatted_charc}[-]{self.COLOR_RESET}&quot;</span>,<span class="comment">#&quot;[-]&quot;,</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                        self.PARTIAL: f<span class="stringliteral">&quot;{self.formatted_cyan}[P]{self.COLOR_RESET}&quot;</span>,<span class="comment">#&quot;[P]&quot;,</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                        self.NOT_INSTALLED: f<span class="stringliteral">&quot;{self.formatted_red}[ ]{self.COLOR_RESET}&quot;</span>,<span class="comment">#&quot;[ ]&quot;,</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                    }</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            prefix_states = {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                        self.INSTALLED: <span class="stringliteral">&quot;[*]&quot;</span>,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                        self.STALE: <span class="stringliteral">&quot;[-]&quot;</span>,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                        self.PARTIAL: <span class="stringliteral">&quot;[P]&quot;</span>,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                        self.NOT_INSTALLED: <span class="stringliteral">&quot;[ ]&quot;</span>,</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                    }</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        categories = []</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <span class="keywordflow">if</span> show_packages:</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            categories.append(<span class="stringliteral">&quot;packages&quot;</span>)</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <span class="keywordflow">if</span> show_collections:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            categories.append(<span class="stringliteral">&quot;collections&quot;</span>)</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <span class="keywordflow">for</span> category <span class="keywordflow">in</span> categories:</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            txt.append(<span class="stringliteral">&quot;%s:&quot;</span> % category.capitalize())</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;            <span class="keywordflow">for</span> info <span class="keywordflow">in</span> sorted(getattr(self, category)(), key=str):</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                status = self.status(info, download_dir)</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                <span class="keywordflow">if</span> (status == self.INSTALLED <span class="keywordflow">and</span> skip_installed) <span class="keywordflow">or</span> (status == self.NOT_INSTALLED <span class="keywordflow">and</span> skip_not_installed):</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                    <span class="keywordflow">continue</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                <span class="keywordflow">if</span> status == self.STALE:</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                    stale = <span class="keyword">True</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                <span class="keywordflow">if</span> status == self.PARTIAL:</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                    partial = <span class="keyword">True</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                prefix = prefix_states[status]</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                name = fill(</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                    <span class="stringliteral">&quot;-&quot;</span> * 27 + (info.name <span class="keywordflow">or</span> info.id), max_line_width, subsequent_indent=27 * <span class="stringliteral">&quot; &quot;</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                )[27:]</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                txt.append(f<span class="stringliteral">&quot;  {prefix} {info.id.ljust(30,&#39;.&#39;)} {name}&quot;</span>)</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;            txt.append(<span class="stringliteral">&quot;&quot;</span>)</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        msg = f<span class="stringliteral">&quot;({prefix_states[self.INSTALLED]} marks installed packages&quot;</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="keywordflow">if</span> stale:</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            msg += f<span class="stringliteral">&quot;; {prefix_states[self.STALE]} marks out-of-date or corrupt packages&quot;</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        <span class="keywordflow">if</span> partial:</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;            msg += f<span class="stringliteral">&quot;; {prefix_states[self.PARTIAL]} marks partially installed collections&quot;</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        txt.append(fill(msg + <span class="stringliteral">&quot;)&quot;</span>, subsequent_indent=<span class="stringliteral">&quot; &quot;</span>, width=max_line_width))</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keywordflow">return</span> txt</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160; </div>
-<div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a67791e03fe4771874717a17785f8d056">  127</a></span>&#160;txt = <a class="code" href="classsrc_1_1utils_1_1_polite_downloader.html">PoliteDownloader</a>().list(nltk_path_str, color_coded=<span class="keyword">True</span>, skip_not_installed=<span class="keyword">True</span>)</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;txt.append(<span class="stringliteral">&quot;\n\n&quot;</span>)</div>
-<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a4913c52881cf9dab76869d2b28261fd2">  129</a></span>&#160;plain_info_logger = <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ae2dfd7172766d01197bea623a3e9ea9f">get_logger</a>(<span class="stringliteral">&quot;EmailClassifier&quot;</span>,__name__+<span class="stringliteral">&quot;: plain logger&quot;</span>,level=<span class="stringliteral">&quot;INFO&quot;</span>)</div>
-<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a8e88bff83082bfa030449cb257f5bbba">  130</a></span>&#160;src_warning_logger = <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ae2dfd7172766d01197bea623a3e9ea9f">get_logger</a>(<span class="stringliteral">&quot;EmailClassifier&quot;</span>,__name__+<span class="stringliteral">&quot;: warning&quot;</span>,level=<span class="stringliteral">&quot;WARNING&quot;</span>)</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;plain_info_logger.info(<span class="stringliteral">&quot;\n&quot;</span>.join(txt))</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160; </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment"># The root logger object for the project</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#aeec866a41a1cfdf5a0f7f4a4f410989f">  135</a></span>&#160;proj_base_info_logger = <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ae2dfd7172766d01197bea623a3e9ea9f">get_logger</a>(<span class="stringliteral">&quot;EmailClassifier&quot;</span>,<span class="stringliteral">&quot;root logger&quot;</span>,level=<span class="stringliteral">&quot;INFO&quot;</span>)</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160; </div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
+<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a67791e03fe4771874717a17785f8d056">  128</a></span>&#160;txt = <a class="code" href="classsrc_1_1utils_1_1_polite_downloader.html">PoliteDownloader</a>().list(nltk_path_str, color_coded=<span class="keyword">True</span>, skip_not_installed=<span class="keyword">True</span>)</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;txt.append(<span class="stringliteral">&quot;\n\n&quot;</span>)</div>
+<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a4913c52881cf9dab76869d2b28261fd2">  130</a></span>&#160;plain_info_logger = <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ae2dfd7172766d01197bea623a3e9ea9f">get_logger</a>(<span class="stringliteral">&quot;EmailClassifier&quot;</span>,__name__+<span class="stringliteral">&quot;: plain logger&quot;</span>,level=<span class="stringliteral">&quot;INFO&quot;</span>)</div>
+<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a8e88bff83082bfa030449cb257f5bbba">  131</a></span>&#160;src_warning_logger = <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ae2dfd7172766d01197bea623a3e9ea9f">get_logger</a>(<span class="stringliteral">&quot;EmailClassifier&quot;</span>,__name__+<span class="stringliteral">&quot;: warning&quot;</span>,level=<span class="stringliteral">&quot;WARNING&quot;</span>)</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;plain_info_logger.info(<span class="stringliteral">&quot;\n&quot;</span>.join(txt))</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="comment"># The root logger object for the project</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#aeec866a41a1cfdf5a0f7f4a4f410989f">  136</a></span>&#160;proj_base_info_logger = <a class="code" href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ae2dfd7172766d01197bea623a3e9ea9f">get_logger</a>(<span class="stringliteral">&quot;EmailClassifier&quot;</span>,__name__+<span class="stringliteral">&quot;: root logger&quot;</span>,level=<span class="stringliteral">&quot;INFO&quot;</span>)</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160; </div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment"># A helper function for converting semantically meaningful, and detailed attribute keys into conveniently short</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment"># alias keys.</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">  141</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">alias_keys</a>(d:dict):</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    keys = tuple(d.keys())</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keywordflow">for</span> k <span class="keywordflow">in</span> keys:</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        val = d[k]</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        <span class="keywordflow">if</span> isinstance(k,str):</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;            new_k = k.split(<span class="stringliteral">&quot;_&quot;</span>)[0]</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;            d.setdefault(new_k,val)</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;            d.setdefault(new_k.lower(), val)</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment"># defining global references to the data types our database objects can support.</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a81cfd5d59aecff4a7a90de523a5647fe">  152</a></span>&#160;DB_INTEGER = <span class="stringliteral">&quot;INTEGER&quot;</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#ab2451238710cd537c076ac07907a208d">  153</a></span>&#160;DB_NULL = <span class="stringliteral">&quot;NULL&quot;</span></div>
-<div class="line"><a name="l00154"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a36482e84626d22ae451b93ddea525641">  154</a></span>&#160;DB_REAL = <span class="stringliteral">&quot;REAL&quot;</span></div>
-<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a1847fbe5149660f6e1e1ac8bf9f70342">  155</a></span>&#160;DB_TEXT = <span class="stringliteral">&quot;TEXT&quot;</span></div>
-<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a8a3ad5850dac23120ef1076508638a9a">  156</a></span>&#160;DB_BLOB = <span class="stringliteral">&quot;BLOB&quot;</span></div>
-<div class="line"><a name="l00157"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#aa44bdd3cb380aa7018a0d368d382dd9c">  157</a></span>&#160;PROJ_CUSTOM_CLASSES = <span class="stringliteral">&quot;COMPLEX_JSON&quot;</span></div>
-<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a0703b1a2d9d89a8148344a50c9eb1c45">  158</a></span>&#160;PROJ_SIMPLE_JSON = <span class="stringliteral">&quot;SIMPLE_JSON&quot;</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160; </div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="comment"># project scoped dictionaries</span></div>
-<div class="line"><a name="l00162"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a35189df8ae69f8af6477f4596d51adb5">  162</a></span>&#160;DB_SUPPORTED_TYPES = {</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="stringliteral">&quot;int&quot;</span>:DB_INTEGER,</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="stringliteral">&quot;integer&quot;</span>:DB_INTEGER,</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    int:DB_INTEGER,</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="stringliteral">&quot;None&quot;</span>:DB_NULL,</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="stringliteral">&quot;NULL&quot;</span>:DB_NULL,</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keywordtype">None</span>:DB_NULL,</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="stringliteral">&quot;float&quot;</span>:DB_REAL,</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    <span class="stringliteral">&quot;REAL&quot;</span>:DB_REAL,</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    float:DB_REAL,</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="stringliteral">&quot;str&quot;</span>:DB_TEXT,</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="stringliteral">&quot;TEXT&quot;</span>:DB_TEXT,</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    str:DB_TEXT,</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="stringliteral">&quot;bytes&quot;</span>:DB_BLOB,</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <span class="stringliteral">&quot;BLOB&quot;</span>:DB_BLOB,</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    bytes:DB_BLOB,</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="stringliteral">&quot;custom_cls&quot;</span>:PROJ_CUSTOM_CLASSES,</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    PROJ_CUSTOM_CLASSES:PROJ_CUSTOM_CLASSES,</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    PROJ_CUSTOM_CLASSES.lower():PROJ_CUSTOM_CLASSES,</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    PROJ_SIMPLE_JSON:PROJ_SIMPLE_JSON,</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    PROJ_SIMPLE_JSON.lower():PROJ_SIMPLE_JSON,</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;}</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<a class="code" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">alias_keys</a>(DB_SUPPORTED_TYPES)</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment"># A mapping of our projects specific database paths.</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment"># If a user wishes to customize database naming, this is where they should make those changes.</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a456e3741043854cf61bbb7d61ea04c93">  189</a></span>&#160;DB_PATH_DICT = {</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="stringliteral">&quot;email_cache&quot;</span>:cache_folder.joinpath(<span class="stringliteral">&quot;sql3_email.db&quot;</span>),</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="stringliteral">&quot;body_cache&quot;</span>:cache_folder.joinpath(<span class="stringliteral">&quot;sql3_message_body.db&quot;</span>),</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="stringliteral">&quot;lemma_cache&quot;</span>:cache_folder.joinpath(<span class="stringliteral">&quot;sql3_extracted_lemma.db&quot;</span>),</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="stringliteral">&quot;consolidated_cache&quot;</span>:cache_folder.joinpath(<span class="stringliteral">&quot;sql3_consolidated.db&quot;</span>)</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;}</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<a class="code" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">alias_keys</a>(DB_PATH_DICT)</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160; </div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment"># A mapping of table names where each key corresponds to a key from DB_PATH_DICT above, and the values are lists of</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment"># strings defining the names of the tables that database should have.</span></div>
-<div class="line"><a name="l00200"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#acf97a860c2a73e237cdb0ff2a9db6c61">  200</a></span>&#160;TABLE_NAMES = {</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="stringliteral">&quot;email_cache&quot;</span>:[<span class="stringliteral">&quot;emails&quot;</span>],</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    <span class="stringliteral">&quot;body_cache&quot;</span>:[<span class="stringliteral">&quot;message_body&quot;</span>],</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="stringliteral">&quot;lemma_cache&quot;</span>:[<span class="stringliteral">&quot;all_lemma&quot;</span>, <span class="stringliteral">&quot;no_stopwords_lemma&quot;</span>],</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;}</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<a class="code" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">alias_keys</a>(TABLE_NAMES)</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160; </div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160; </div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160; </div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; </div>
-<div class="line"><a name="l00210"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">  210</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">handle_warning_about_unexpected_exceptions</a>(be:BaseException,*details:Iterable):</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    src_warning_logger.warning(f<span class="stringliteral">&quot;{type(be)}:&quot;</span></div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;                               f<span class="stringliteral">&quot;\n\t\t{be.args}&quot;</span></div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                               f<span class="stringliteral">&quot;\n\t\t{details}&quot;</span>)</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160; </div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160; </div>
-<div class="line"><a name="l00216"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a7f7d00301cc409daa527615f97c47221">  216</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a7f7d00301cc409daa527615f97c47221">undo_pickle</a>(fd_or_data, is_file:bool=<span class="keyword">True</span>):</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="keywordflow">if</span> gc.isenabled():</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        gc.disable()</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    <span class="keywordflow">try</span>:</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <span class="keywordflow">if</span> is_file:</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;            <span class="keywordflow">return</span> pickle.load(fd_or_data)</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        <span class="keywordflow">return</span> pickle.loads(fd_or_data)</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="keywordflow">except</span> BaseException <span class="keyword">as</span> be:</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        <a class="code" href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">handle_warning_about_unexpected_exceptions</a>(be,<span class="stringliteral">&quot;&quot;</span>)</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keywordflow">finally</span>:</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="keywordflow">if</span> <span class="keywordflow">not</span> gc.isenabled():</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;            gc.enable()</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160; </div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment"># A convenience function for quickly creating python pickle objects that temporarily disables garbage collection during</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment"># the serialization process. In some cases, turning garbage collection off can represent a 20x speedup in the time</span></div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment"># it takes to pickle an object.</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a5a4f3963731fcad51801f1d82fc16053">  233</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a5a4f3963731fcad51801f1d82fc16053">do_pickle</a>(obj,fd=None,protocol=-1):</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordflow">if</span> gc.isenabled():</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        gc.disable()</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="keywordflow">try</span>:</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        <span class="keywordflow">if</span> fd <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;            <span class="keywordflow">return</span> pickle.dumps(obj,protocol=protocol)</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        <span class="keywordflow">return</span> pickle.dump(obj,fd,protocol=protocol)</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="keywordflow">except</span> BaseException <span class="keyword">as</span> be:</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        <a class="code" href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">handle_warning_about_unexpected_exceptions</a>(be,<span class="stringliteral">&quot;&quot;</span>)</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordflow">finally</span>:</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        <span class="keywordflow">if</span> <span class="keywordflow">not</span> gc.isenabled():</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;            gc.enable()</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment">#######################################################################################################################</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment"># check and optionally set environment variables for imap server login</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment">#######################################################################################################################</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a5a7cf9a079adb3a16e941f5947723419">  141</a></span>&#160;cridentials_path = project_root_folder.joinpath(<span class="stringliteral">&quot;src/environ_vars.json&quot;</span>)</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="keywordflow">if</span> cridentials_path.exists():</div>
+<div class="line"><a name="l00143"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#aa464b9d94123f9fb0baf48412bc16308">  143</a></span>&#160;    cridentials = json.loads(cridentials_path.read_text(<span class="stringliteral">&quot;utf-8&quot;</span>))</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    cridentials_path = project_root_folder.joinpath(<span class="stringliteral">&quot;src/template_environ_vars.json&quot;</span>)</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    cridentials = json.loads(cridentials_path.read_text(<span class="stringliteral">&quot;utf-8&quot;</span>))</div>
+<div class="line"><a name="l00147"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a8e31a8d1c355a17518aa52d99661cf99">  147</a></span>&#160;    confirmation = <span class="stringliteral">&quot;&quot;</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="keywordflow">while</span> confirmation.lower() <span class="keywordflow">not</span> <span class="keywordflow">in</span> {<span class="stringliteral">&quot;yes&quot;</span>, <span class="stringliteral">&quot;y&quot;</span>}:</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        cridentials[<span class="stringliteral">&#39;EMAIL_ACCOUNT&#39;</span>] = input(</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;            f<span class="stringliteral">&quot;Please enter the target email account:\n\t{cridentials[&#39;__comment_email_account&#39;]}\nhere: &quot;</span>)</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        confirmation = input(f<span class="stringliteral">&quot;You entered: {cridentials[&#39;EMAIL_ACCOUNT&#39;]}\n\tIs this correct? Y/[N]? &quot;</span>)</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    confirmation = <span class="stringliteral">&quot;&quot;</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    <span class="keywordflow">while</span> confirmation.lower() <span class="keywordflow">not</span> <span class="keywordflow">in</span> {<span class="stringliteral">&quot;yes&quot;</span>, <span class="stringliteral">&quot;y&quot;</span>}:</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        cridentials[<span class="stringliteral">&#39;PASSWORD&#39;</span>] = input(</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;            f<span class="stringliteral">&quot;Please enter account api password:\n\t{cridentials[&#39;__comment_password&#39;]}\nhere: &quot;</span>)</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        confirmation = input(f<span class="stringliteral">&quot;You entered: {cridentials[&#39;PASSWORD&#39;]}\n\tIs this correct? Y/[N]? &quot;</span>)</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    confirmation = <span class="stringliteral">&quot;&quot;</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keywordflow">while</span> confirmation.lower() <span class="keywordflow">not</span> <span class="keywordflow">in</span> {<span class="stringliteral">&quot;yes&quot;</span>, <span class="stringliteral">&quot;y&quot;</span>}:</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        cridentials[<span class="stringliteral">&#39;EMAIL_SERVER_HOST&#39;</span>] = input(</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;            f<span class="stringliteral">&quot;Please enter email server hose:\n\t{cridentials[&#39;__comment_host&#39;]}\nhere: &quot;</span>)</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        confirmation = input(f<span class="stringliteral">&quot;You entered: {cridentials[&#39;EMAIL_SERVER_HOST&#39;]}\n\tIs this correct? Y/[N]? &quot;</span>)</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    cridentials_path = cridentials_path.with_name(<span class="stringliteral">&quot;environ_vars.json&quot;</span>)</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    cridentials_path.write_text(json.dumps(cridentials,indent=4))</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160; </div>
+<div class="line"><a name="l00165"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a3b8f2fffefa63b7223bf7754550308a5">  165</a></span>&#160;GLOBAL_IMAP_EMAIL_ACCOUNT = cridentials[<span class="stringliteral">&quot;EMAIL_ACCOUNT&quot;</span>]</div>
+<div class="line"><a name="l00166"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a2444d388140a5fc3b170479f333aaf8e">  166</a></span>&#160;GLOBAL_IMAP_PASSWORD = cridentials[<span class="stringliteral">&quot;PASSWORD&quot;</span>]</div>
+<div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a65d0aae8358419518d545c2343d68a64">  167</a></span>&#160;GLOBAL_IMAP_HOST = cridentials[<span class="stringliteral">&quot;EMAIL_SERVER_HOST&quot;</span>]</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment"># A helper function for converting semantically meaningful, and detailed attribute keys into conveniently short</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment"># alias keys.</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">  172</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">alias_keys</a>(d:dict):</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    keys = tuple(d.keys())</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keywordflow">for</span> k <span class="keywordflow">in</span> keys:</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        val = d[k]</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        <span class="keywordflow">if</span> isinstance(k,str):</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;            new_k = k.split(<span class="stringliteral">&quot;_&quot;</span>)[0]</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;            d.setdefault(new_k,val)</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;            d.setdefault(new_k.lower(), val)</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160; </div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment"># defining global references to the data types our database objects can support.</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a81cfd5d59aecff4a7a90de523a5647fe">  183</a></span>&#160;DB_INTEGER = <span class="stringliteral">&quot;INTEGER&quot;</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#ab2451238710cd537c076ac07907a208d">  184</a></span>&#160;DB_NULL = <span class="stringliteral">&quot;NULL&quot;</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a36482e84626d22ae451b93ddea525641">  185</a></span>&#160;DB_REAL = <span class="stringliteral">&quot;REAL&quot;</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a1847fbe5149660f6e1e1ac8bf9f70342">  186</a></span>&#160;DB_TEXT = <span class="stringliteral">&quot;TEXT&quot;</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a8a3ad5850dac23120ef1076508638a9a">  187</a></span>&#160;DB_BLOB = <span class="stringliteral">&quot;BLOB&quot;</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#aa44bdd3cb380aa7018a0d368d382dd9c">  188</a></span>&#160;PROJ_CUSTOM_CLASSES = <span class="stringliteral">&quot;COMPLEX_JSON&quot;</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a0703b1a2d9d89a8148344a50c9eb1c45">  189</a></span>&#160;PROJ_SIMPLE_JSON = <span class="stringliteral">&quot;SIMPLE_JSON&quot;</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160; </div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="comment"># project scoped dictionaries</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a35189df8ae69f8af6477f4596d51adb5">  193</a></span>&#160;DB_SUPPORTED_TYPES = {</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="stringliteral">&quot;int&quot;</span>:DB_INTEGER,</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <span class="stringliteral">&quot;integer&quot;</span>:DB_INTEGER,</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    int:DB_INTEGER,</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="stringliteral">&quot;None&quot;</span>:DB_NULL,</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="stringliteral">&quot;NULL&quot;</span>:DB_NULL,</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordtype">None</span>:DB_NULL,</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <span class="stringliteral">&quot;float&quot;</span>:DB_REAL,</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="stringliteral">&quot;REAL&quot;</span>:DB_REAL,</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    float:DB_REAL,</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="stringliteral">&quot;str&quot;</span>:DB_TEXT,</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="stringliteral">&quot;TEXT&quot;</span>:DB_TEXT,</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    str:DB_TEXT,</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    <span class="stringliteral">&quot;bytes&quot;</span>:DB_BLOB,</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    <span class="stringliteral">&quot;BLOB&quot;</span>:DB_BLOB,</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    bytes:DB_BLOB,</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="stringliteral">&quot;custom_cls&quot;</span>:PROJ_CUSTOM_CLASSES,</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    PROJ_CUSTOM_CLASSES:PROJ_CUSTOM_CLASSES,</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    PROJ_CUSTOM_CLASSES.lower():PROJ_CUSTOM_CLASSES,</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    PROJ_SIMPLE_JSON:PROJ_SIMPLE_JSON,</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    PROJ_SIMPLE_JSON.lower():PROJ_SIMPLE_JSON,</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;}</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<a class="code" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">alias_keys</a>(DB_SUPPORTED_TYPES)</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160; </div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment"># A mapping of our projects specific database paths.</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment"># If a user wishes to customize database naming, this is where they should make those changes.</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a456e3741043854cf61bbb7d61ea04c93">  220</a></span>&#160;DB_PATH_DICT = {</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="stringliteral">&quot;email_cache&quot;</span>:cache_folder.joinpath(<span class="stringliteral">&quot;sql3_email.db&quot;</span>),</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="stringliteral">&quot;body_cache&quot;</span>:cache_folder.joinpath(<span class="stringliteral">&quot;sql3_message_body.db&quot;</span>),</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="stringliteral">&quot;lemma_cache&quot;</span>:cache_folder.joinpath(<span class="stringliteral">&quot;sql3_extracted_lemma.db&quot;</span>),</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="stringliteral">&quot;consolidated_cache&quot;</span>:cache_folder.joinpath(<span class="stringliteral">&quot;sql3_consolidated.db&quot;</span>)</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;}</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<a class="code" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">alias_keys</a>(DB_PATH_DICT)</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment"># A mapping of table names where each key corresponds to a key from DB_PATH_DICT above, and the values are lists of</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment"># strings defining the names of the tables that database should have.</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#acf97a860c2a73e237cdb0ff2a9db6c61">  231</a></span>&#160;TABLE_NAMES = {</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="stringliteral">&quot;email_cache&quot;</span>:[<span class="stringliteral">&quot;emails&quot;</span>],</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="stringliteral">&quot;body_cache&quot;</span>:[<span class="stringliteral">&quot;message_body&quot;</span>],</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="stringliteral">&quot;lemma_cache&quot;</span>:[<span class="stringliteral">&quot;all_lemma&quot;</span>, <span class="stringliteral">&quot;no_stopwords_lemma&quot;</span>],</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;}</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<a class="code" href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">alias_keys</a>(TABLE_NAMES)</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160; </div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160; </div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
+<div class="line"><a name="l00241"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">  241</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">handle_warning_about_unexpected_exceptions</a>(be:BaseException,*details:Iterable):</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    src_warning_logger.warning(f<span class="stringliteral">&quot;{type(be)}:&quot;</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                               f<span class="stringliteral">&quot;\n\t\t{be.args}&quot;</span></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;                               f<span class="stringliteral">&quot;\n\t\t{details}&quot;</span>)</div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160; </div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160; </div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="comment"># An abstract base class that represents a generic interface for custom class objects that will end up being</span></div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="comment"># cached as byte strings in a database.</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html">  250</a></span>&#160;<span class="keyword">class </span><a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html">JPickleSerializable</a>:</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    _my_attrs:List[str]</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160; </div>
-<div class="line"><a name="l00253"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a222fe8214ad1ae718305387986b5e61e">  253</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a222fe8214ad1ae718305387986b5e61e">__init__</a>(self, *class_attrs:List[str]):</div>
-<div class="line"><a name="l00254"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a60c4fc4714b6e68863c589c9a20419b9">  254</a></span>&#160;        self.<a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a60c4fc4714b6e68863c589c9a20419b9">_my_attrs</a>_my_attrs = class_attrs</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160; </div>
-<div class="line"><a name="l00256"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#addd7dc2224b1ff399f41c6c344dad59b">  256</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#addd7dc2224b1ff399f41c6c344dad59b">to_json</a>(self, indent:int=4):</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="keywordflow">try</span>:</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            <span class="keywordflow">if</span> gc.isenabled():</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                gc.disable()</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;            <span class="keywordflow">return</span> jp_encode(self, indent=indent)</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="keywordflow">finally</span>:</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;            <span class="keywordflow">if</span> <span class="keywordflow">not</span> gc.isenabled():</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;                gc.enable()</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160; </div>
-<div class="line"><a name="l00265"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#aa18b7d4e76d7667d50924fbc3f97509b">  265</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#aa18b7d4e76d7667d50924fbc3f97509b">__conform__</a>(self,protocol):</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        <span class="keywordflow">if</span> protocol <span class="keywordflow">is</span> sqlite3.PrepareProtocol:</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            <span class="keywordflow">return</span> self.<a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#addd7dc2224b1ff399f41c6c344dad59b">to_json</a>to_json()</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160; </div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160; </div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="comment"># An extension of the JPickleSerializable interface that ensures our custom classes can properly handle our</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="comment"># custom character substitutions after being serialized/deserialized via the JPickleSerializable interface.</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_tagger_base.html">  273</a></span>&#160;<span class="keyword">class </span><a class="code" href="classsrc_1_1utils_1_1_tagger_base.html">TaggerBase</a>(<a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html">JPickleSerializable</a>):</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="preprocessor">@staticmethod</span></div>
-<div class="line"><a name="l00275"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_tagger_base.html#ada401cd6694e602c30bf2f559919cd2e">  275</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_tagger_base.html#ada401cd6694e602c30bf2f559919cd2e">word_token_cleanup</a>(tokens):</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(len(tokens) - 1, 0, -1):</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;            <span class="keywordflow">if</span> <span class="stringliteral">&quot;&#39;&quot;</span> <span class="keywordflow">in</span> tokens[i]:</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                tokens[i - 1] += tokens.pop(i).replace(<span class="stringliteral">&quot;&#39;&quot;</span>, <span class="stringliteral">&quot;_^_&quot;</span>)</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot; &quot;</span>.join(tokens)</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160; </div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="comment">##</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="comment"># A convenience function for ensuring an object is a list of strings.</span></div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="comment"># This function is called in several places.</span></div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="comment"># It ensures that function arguments of type Union[Path,AnyStr,List[Union[Path,AnyStr]]] will be resolved to a list of</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="comment"># strings.</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a416793548bc2b54c7b36741a1731d4d3">  286</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a416793548bc2b54c7b36741a1731d4d3">to_list</a>(obj)-&gt;List[str]:</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="keywordflow">if</span> isinstance(obj,list):</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        <span class="keywordflow">return</span> obj</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <span class="keywordflow">if</span> isinstance(obj,bytes):</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        obj = obj.decode(<span class="stringliteral">&quot;utf-8&quot;</span>)</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keywordflow">if</span> isinstance(obj,str):</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;        <span class="keywordflow">return</span> [s.strip() <span class="keywordflow">for</span> s <span class="keywordflow">in</span> obj.split(<span class="stringliteral">&quot;,&quot;</span>)]</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keywordflow">if</span> isinstance(obj,Iterable):</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        <span class="keywordflow">return</span> list(obj)</div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html">src.utils.JPickleSerializable</a></div><div class="ttdoc">An abstract base class that represents a generic interface for custom class objects that will end up ...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00250">__init__.py:250</a></div></div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html_a222fe8214ad1ae718305387986b5e61e"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a222fe8214ad1ae718305387986b5e61e">src.utils.JPickleSerializable.__init__</a></div><div class="ttdeci">def __init__(self, *List[str] class_attrs)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00253">__init__.py:253</a></div></div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html_a60c4fc4714b6e68863c589c9a20419b9"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a60c4fc4714b6e68863c589c9a20419b9">src.utils.JPickleSerializable._my_attrs</a></div><div class="ttdeci">_my_attrs</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00254">__init__.py:254</a></div></div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html_aa18b7d4e76d7667d50924fbc3f97509b"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html#aa18b7d4e76d7667d50924fbc3f97509b">src.utils.JPickleSerializable.__conform__</a></div><div class="ttdeci">def __conform__(self, protocol)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00265">__init__.py:265</a></div></div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html_addd7dc2224b1ff399f41c6c344dad59b"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html#addd7dc2224b1ff399f41c6c344dad59b">src.utils.JPickleSerializable.to_json</a></div><div class="ttdeci">def to_json(self, int indent=4)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00256">__init__.py:256</a></div></div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_polite_downloader_html"><div class="ttname"><a href="classsrc_1_1utils_1_1_polite_downloader.html">src.utils.PoliteDownloader</a></div><div class="ttdoc">Subclassed the Downloader provided by nltk to give better control over the garbage console output the...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00053">__init__.py:53</a></div></div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_polite_downloader_html_a75621f70640ca6f1c7ff09badd939acf"><div class="ttname"><a href="classsrc_1_1utils_1_1_polite_downloader.html#a75621f70640ca6f1c7ff09badd939acf">src.utils.PoliteDownloader.list</a></div><div class="ttdeci">def list(self, download_dir=None, show_packages=True, show_collections=True, header=True, skip_installed=False, int max_line_width=120, bool color_coded=False, bool skip_not_installed=True)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00070">__init__.py:71</a></div></div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_tagger_base_html"><div class="ttname"><a href="classsrc_1_1utils_1_1_tagger_base.html">src.utils.TaggerBase</a></div><div class="ttdoc">An extension of the JPickleSerializable interface that ensures our custom classes can properly handle...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00273">__init__.py:273</a></div></div>
-<div class="ttc" id="aclasssrc_1_1utils_1_1_tagger_base_html_ada401cd6694e602c30bf2f559919cd2e"><div class="ttname"><a href="classsrc_1_1utils_1_1_tagger_base.html#ada401cd6694e602c30bf2f559919cd2e">src.utils.TaggerBase.word_token_cleanup</a></div><div class="ttdeci">def word_token_cleanup(tokens)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00275">__init__.py:275</a></div></div>
+<div class="line"><a name="l00247"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a7f7d00301cc409daa527615f97c47221">  247</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a7f7d00301cc409daa527615f97c47221">undo_pickle</a>(fd_or_data, is_file:bool=<span class="keyword">True</span>):</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="keywordflow">if</span> gc.isenabled():</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        gc.disable()</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    <span class="keywordflow">try</span>:</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        <span class="keywordflow">if</span> is_file:</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;            <span class="keywordflow">return</span> pickle.load(fd_or_data)</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keywordflow">return</span> pickle.loads(fd_or_data)</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    <span class="keywordflow">except</span> BaseException <span class="keyword">as</span> be:</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        <a class="code" href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">handle_warning_about_unexpected_exceptions</a>(be,<span class="stringliteral">&quot;&quot;</span>)</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">finally</span>:</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="keywordflow">if</span> <span class="keywordflow">not</span> gc.isenabled():</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            gc.enable()</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160; </div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="comment"># A convenience function for quickly creating python pickle objects that temporarily disables garbage collection during</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="comment"># the serialization process. In some cases, turning garbage collection off can represent a 20x speedup in the time</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment"># it takes to pickle an object.</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a5a4f3963731fcad51801f1d82fc16053">  264</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a5a4f3963731fcad51801f1d82fc16053">do_pickle</a>(obj,fd=None,protocol=-1):</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keywordflow">if</span> gc.isenabled():</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        gc.disable()</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keywordflow">try</span>:</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordflow">if</span> fd <span class="keywordflow">is</span> <span class="keywordtype">None</span>:</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;            <span class="keywordflow">return</span> pickle.dumps(obj,protocol=protocol)</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        <span class="keywordflow">return</span> pickle.dump(obj,fd,protocol=protocol)</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    <span class="keywordflow">except</span> BaseException <span class="keyword">as</span> be:</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        <a class="code" href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">handle_warning_about_unexpected_exceptions</a>(be,<span class="stringliteral">&quot;&quot;</span>)</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    <span class="keywordflow">finally</span>:</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="keywordflow">if</span> <span class="keywordflow">not</span> gc.isenabled():</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;            gc.enable()</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160; </div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="comment"># An abstract base class that represents a generic interface for custom class objects that will end up being</span></div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="comment"># cached as byte strings in a database.</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html">  281</a></span>&#160;<span class="keyword">class </span><a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html">JPickleSerializable</a>:</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    _my_attrs:List[str]</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160; </div>
+<div class="line"><a name="l00284"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a222fe8214ad1ae718305387986b5e61e">  284</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a222fe8214ad1ae718305387986b5e61e">__init__</a>(self, *class_attrs:List[str]):</div>
+<div class="line"><a name="l00285"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a60c4fc4714b6e68863c589c9a20419b9">  285</a></span>&#160;        self.<a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a60c4fc4714b6e68863c589c9a20419b9">_my_attrs</a>_my_attrs = class_attrs</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160; </div>
+<div class="line"><a name="l00287"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#addd7dc2224b1ff399f41c6c344dad59b">  287</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#addd7dc2224b1ff399f41c6c344dad59b">to_json</a>(self, indent:int=4):</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        <span class="keywordflow">try</span>:</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;            <span class="keywordflow">if</span> gc.isenabled():</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;                gc.disable()</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;            <span class="keywordflow">return</span> jp_encode(self, indent=indent)</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;        <span class="keywordflow">finally</span>:</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;            <span class="keywordflow">if</span> <span class="keywordflow">not</span> gc.isenabled():</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;                gc.enable()</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160; </div>
+<div class="line"><a name="l00296"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#aa18b7d4e76d7667d50924fbc3f97509b">  296</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#aa18b7d4e76d7667d50924fbc3f97509b">__conform__</a>(self,protocol):</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        <span class="keywordflow">if</span> protocol <span class="keywordflow">is</span> sqlite3.PrepareProtocol:</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            <span class="keywordflow">return</span> self.<a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html#addd7dc2224b1ff399f41c6c344dad59b">to_json</a>to_json()</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160; </div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160; </div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="comment"># An extension of the JPickleSerializable interface that ensures our custom classes can properly handle our</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="comment"># custom character substitutions after being serialized/deserialized via the JPickleSerializable interface.</span></div>
+<div class="line"><a name="l00304"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_tagger_base.html">  304</a></span>&#160;<span class="keyword">class </span><a class="code" href="classsrc_1_1utils_1_1_tagger_base.html">TaggerBase</a>(<a class="code" href="classsrc_1_1utils_1_1_j_pickle_serializable.html">JPickleSerializable</a>):</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="preprocessor">@staticmethod</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno"><a class="line" href="classsrc_1_1utils_1_1_tagger_base.html#ada401cd6694e602c30bf2f559919cd2e">  306</a></span>&#160;    <span class="keyword">def </span><a class="code" href="classsrc_1_1utils_1_1_tagger_base.html#ada401cd6694e602c30bf2f559919cd2e">word_token_cleanup</a>(tokens):</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        <span class="keywordflow">for</span> i <span class="keywordflow">in</span> range(len(tokens) - 1, 0, -1):</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            <span class="keywordflow">if</span> <span class="stringliteral">&quot;&#39;&quot;</span> <span class="keywordflow">in</span> tokens[i]:</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                tokens[i - 1] += tokens.pop(i).replace(<span class="stringliteral">&quot;&#39;&quot;</span>, <span class="stringliteral">&quot;_^_&quot;</span>)</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot; &quot;</span>.join(tokens)</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; </div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="comment">##</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="comment"># A convenience function for ensuring an object is a list of strings.</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="comment"># This function is called in several places.</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="comment"># It ensures that function arguments of type Union[Path,AnyStr,List[Union[Path,AnyStr]]] will be resolved to a list of</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="comment"># strings.</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno"><a class="line" href="namespacesrc_1_1utils.html#a416793548bc2b54c7b36741a1731d4d3">  317</a></span>&#160;<span class="keyword">def </span><a class="code" href="namespacesrc_1_1utils.html#a416793548bc2b54c7b36741a1731d4d3">to_list</a>(obj)-&gt;List[str]:</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    <span class="keywordflow">if</span> isinstance(obj,list):</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        <span class="keywordflow">return</span> obj</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">if</span> isinstance(obj,bytes):</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        obj = obj.decode(<span class="stringliteral">&quot;utf-8&quot;</span>)</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordflow">if</span> isinstance(obj,str):</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        <span class="keywordflow">return</span> [s.strip() <span class="keywordflow">for</span> s <span class="keywordflow">in</span> obj.split(<span class="stringliteral">&quot;,&quot;</span>)]</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="keywordflow">if</span> isinstance(obj,Iterable):</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        <span class="keywordflow">return</span> list(obj)</div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html">src.utils.JPickleSerializable</a></div><div class="ttdoc">An abstract base class that represents a generic interface for custom class objects that will end up ...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00281">__init__.py:281</a></div></div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html_a222fe8214ad1ae718305387986b5e61e"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a222fe8214ad1ae718305387986b5e61e">src.utils.JPickleSerializable.__init__</a></div><div class="ttdeci">def __init__(self, *List[str] class_attrs)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00284">__init__.py:284</a></div></div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html_a60c4fc4714b6e68863c589c9a20419b9"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html#a60c4fc4714b6e68863c589c9a20419b9">src.utils.JPickleSerializable._my_attrs</a></div><div class="ttdeci">_my_attrs</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00285">__init__.py:285</a></div></div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html_aa18b7d4e76d7667d50924fbc3f97509b"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html#aa18b7d4e76d7667d50924fbc3f97509b">src.utils.JPickleSerializable.__conform__</a></div><div class="ttdeci">def __conform__(self, protocol)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00296">__init__.py:296</a></div></div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_j_pickle_serializable_html_addd7dc2224b1ff399f41c6c344dad59b"><div class="ttname"><a href="classsrc_1_1utils_1_1_j_pickle_serializable.html#addd7dc2224b1ff399f41c6c344dad59b">src.utils.JPickleSerializable.to_json</a></div><div class="ttdeci">def to_json(self, int indent=4)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00287">__init__.py:287</a></div></div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_polite_downloader_html"><div class="ttname"><a href="classsrc_1_1utils_1_1_polite_downloader.html">src.utils.PoliteDownloader</a></div><div class="ttdoc">Subclassed the Downloader provided by nltk to give better control over the garbage console output the...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00054">__init__.py:54</a></div></div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_polite_downloader_html_a75621f70640ca6f1c7ff09badd939acf"><div class="ttname"><a href="classsrc_1_1utils_1_1_polite_downloader.html#a75621f70640ca6f1c7ff09badd939acf">src.utils.PoliteDownloader.list</a></div><div class="ttdeci">def list(self, download_dir=None, show_packages=True, show_collections=True, header=True, skip_installed=False, int max_line_width=120, bool color_coded=False, bool skip_not_installed=True)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00071">__init__.py:72</a></div></div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_tagger_base_html"><div class="ttname"><a href="classsrc_1_1utils_1_1_tagger_base.html">src.utils.TaggerBase</a></div><div class="ttdoc">An extension of the JPickleSerializable interface that ensures our custom classes can properly handle...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00304">__init__.py:304</a></div></div>
+<div class="ttc" id="aclasssrc_1_1utils_1_1_tagger_base_html_ada401cd6694e602c30bf2f559919cd2e"><div class="ttname"><a href="classsrc_1_1utils_1_1_tagger_base.html#ada401cd6694e602c30bf2f559919cd2e">src.utils.TaggerBase.word_token_cleanup</a></div><div class="ttdeci">def word_token_cleanup(tokens)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00306">__init__.py:306</a></div></div>
 <div class="ttc" id="anamespacenltk_1_1downloader_html"><div class="ttname"><a href="namespacenltk_1_1downloader.html">nltk.downloader</a></div></div>
 <div class="ttc" id="anamespacesrc_1_1utils_1_1backup_1_1custom__logger_html_ac032ae4e66e4ef6b037f7fa0ec8747f6"><div class="ttname"><a href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ac032ae4e66e4ef6b037f7fa0ec8747f6">src.utils.backup.custom_logger.import_warnings_logger</a></div><div class="ttdeci">logging.Logger import_warnings_logger</div><div class="ttdef"><b>Definition:</b> <a href="backup_2custom__logger_8py_source.html#l00534">custom_logger.py:534</a></div></div>
 <div class="ttc" id="anamespacesrc_1_1utils_1_1backup_1_1custom__logger_html_ae2dfd7172766d01197bea623a3e9ea9f"><div class="ttname"><a href="namespacesrc_1_1utils_1_1backup_1_1custom__logger.html#ae2dfd7172766d01197bea623a3e9ea9f">src.utils.backup.custom_logger.get_logger</a></div><div class="ttdeci">logging.Logger get_logger(str root_name, str child_name=None, str header_label=None, Union[Formatter, str] formatter=None, Union[int, str] level=None, dict logger_registration_dict=None, handler_delegate=logging.StreamHandler, bool do_file_output=False, **handler_kwargs)</div><div class="ttdef"><b>Definition:</b> <a href="backup_2custom__logger_8py_source.html#l00365">custom_logger.py:373</a></div></div>
-<div class="ttc" id="anamespacesrc_1_1utils_html_a328d6ccace46735185a4416efe0f8a1b"><div class="ttname"><a href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">src.utils.handle_warning_about_unexpected_exceptions</a></div><div class="ttdeci">def handle_warning_about_unexpected_exceptions(BaseException be, *Iterable details)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00210">__init__.py:210</a></div></div>
-<div class="ttc" id="anamespacesrc_1_1utils_html_a416793548bc2b54c7b36741a1731d4d3"><div class="ttname"><a href="namespacesrc_1_1utils.html#a416793548bc2b54c7b36741a1731d4d3">src.utils.to_list</a></div><div class="ttdeci">List[str] to_list(obj)</div><div class="ttdoc">A convenience function for ensuring an object is a list of strings.</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00286">__init__.py:286</a></div></div>
-<div class="ttc" id="anamespacesrc_1_1utils_html_a478b066d00a55f3cc20fbac4b3600c1b"><div class="ttname"><a href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">src.utils.alias_keys</a></div><div class="ttdeci">def alias_keys(dict d)</div><div class="ttdoc">A helper function for converting semantically meaningful, and detailed attribute keys into convenient...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00141">__init__.py:141</a></div></div>
-<div class="ttc" id="anamespacesrc_1_1utils_html_a5a4f3963731fcad51801f1d82fc16053"><div class="ttname"><a href="namespacesrc_1_1utils.html#a5a4f3963731fcad51801f1d82fc16053">src.utils.do_pickle</a></div><div class="ttdeci">def do_pickle(obj, fd=None, protocol=-1)</div><div class="ttdoc">A convenience function for quickly creating python pickle objects that temporarily disables garbage c...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00233">__init__.py:233</a></div></div>
-<div class="ttc" id="anamespacesrc_1_1utils_html_a7f7d00301cc409daa527615f97c47221"><div class="ttname"><a href="namespacesrc_1_1utils.html#a7f7d00301cc409daa527615f97c47221">src.utils.undo_pickle</a></div><div class="ttdeci">def undo_pickle(fd_or_data, bool is_file=True)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00216">__init__.py:216</a></div></div>
+<div class="ttc" id="anamespacesrc_1_1utils_html_a328d6ccace46735185a4416efe0f8a1b"><div class="ttname"><a href="namespacesrc_1_1utils.html#a328d6ccace46735185a4416efe0f8a1b">src.utils.handle_warning_about_unexpected_exceptions</a></div><div class="ttdeci">def handle_warning_about_unexpected_exceptions(BaseException be, *Iterable details)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00241">__init__.py:241</a></div></div>
+<div class="ttc" id="anamespacesrc_1_1utils_html_a416793548bc2b54c7b36741a1731d4d3"><div class="ttname"><a href="namespacesrc_1_1utils.html#a416793548bc2b54c7b36741a1731d4d3">src.utils.to_list</a></div><div class="ttdeci">List[str] to_list(obj)</div><div class="ttdoc">A convenience function for ensuring an object is a list of strings.</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00317">__init__.py:317</a></div></div>
+<div class="ttc" id="anamespacesrc_1_1utils_html_a478b066d00a55f3cc20fbac4b3600c1b"><div class="ttname"><a href="namespacesrc_1_1utils.html#a478b066d00a55f3cc20fbac4b3600c1b">src.utils.alias_keys</a></div><div class="ttdeci">def alias_keys(dict d)</div><div class="ttdoc">A helper function for converting semantically meaningful, and detailed attribute keys into convenient...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00172">__init__.py:172</a></div></div>
+<div class="ttc" id="anamespacesrc_1_1utils_html_a5a4f3963731fcad51801f1d82fc16053"><div class="ttname"><a href="namespacesrc_1_1utils.html#a5a4f3963731fcad51801f1d82fc16053">src.utils.do_pickle</a></div><div class="ttdeci">def do_pickle(obj, fd=None, protocol=-1)</div><div class="ttdoc">A convenience function for quickly creating python pickle objects that temporarily disables garbage c...</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00264">__init__.py:264</a></div></div>
+<div class="ttc" id="anamespacesrc_1_1utils_html_a7f7d00301cc409daa527615f97c47221"><div class="ttname"><a href="namespacesrc_1_1utils.html#a7f7d00301cc409daa527615f97c47221">src.utils.undo_pickle</a></div><div class="ttdeci">def undo_pickle(fd_or_data, bool is_file=True)</div><div class="ttdef"><b>Definition:</b> <a href="utils_2____init_____8py_source.html#l00247">__init__.py:247</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

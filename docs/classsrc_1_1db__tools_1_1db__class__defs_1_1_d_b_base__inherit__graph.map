@@ -1,7 +1,7 @@
 <map id="src.db_tools.db_class_defs.DBBase" name="src.db_tools.db_class_defs.DBBase">
-<area shape="rect" id="node1" title="The base class for our various custom database management classes." alt="" coords="5,104,155,145"/>
-<area shape="rect" id="node2" href="$classsrc_1_1body__extraction_1_1cache__class__defs_1_1_message_body_d_b.html" title=" " alt="" coords="203,5,399,47"/>
-<area shape="rect" id="node3" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_threaded_d_b_base.html" title="This is an experimental class that is not yet finished!! An experimental subclass of DBBase attemptin..." alt="" coords="221,71,380,112"/>
-<area shape="rect" id="node4" href="$classsrc_1_1email__caching_1_1cache__class__defs_1_1_email_d_b.html" title=" " alt="" coords="217,136,384,177"/>
-<area shape="rect" id="node5" href="$classsrc_1_1lemma__extraction_1_1cache__class__defs_1_1_lemma_d_b.html" title=" " alt="" coords="207,201,394,243"/>
+<area shape="rect" id="node1" title="The base class for our various custom database management classes." alt="" coords="5,81,237,108"/>
+<area shape="rect" id="node2" href="$classsrc_1_1body__extraction_1_1cache__class__defs_1_1_message_body_d_b.html" title=" " alt="" coords="285,5,635,32"/>
+<area shape="rect" id="node3" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_threaded_d_b_base.html" title="This is an experimental class that is not yet finished!! An experimental subclass of DBBase attemptin..." alt="" coords="317,56,603,83"/>
+<area shape="rect" id="node4" href="$classsrc_1_1email__caching_1_1cache__class__defs_1_1_email_d_b.html" title=" " alt="" coords="315,107,605,133"/>
+<area shape="rect" id="node5" href="$classsrc_1_1lemma__extraction_1_1cache__class__defs_1_1_lemma_d_b.html" title=" " alt="" coords="300,157,620,184"/>
 </map>

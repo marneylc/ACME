@@ -1,6 +1,6 @@
 <map id="src.db_tools.db_class_defs.DBBase._establish_new_connection" name="src.db_tools.db_class_defs.DBBase._establish_new_connection">
-<area shape="rect" id="node1" title=" " alt="" coords="5,31,173,87"/>
-<area shape="rect" id="node2" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#a47894228f63f488c5212dd846621da72" title=" " alt="" coords="221,5,416,47"/>
-<area shape="rect" id="node4" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#ade81609e37ef5b096b7d351a7d116b83" title="A list of strings, where each element in the list is the name of a table in the main DB." alt="" coords="227,71,410,112"/>
-<area shape="rect" id="node3" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#a429bfd28d78ab3be7bfc8b3f24509fa1" title="Calling this property requires that we have made a previous call to self.__call__() in order to prope..." alt="" coords="464,5,636,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,23,300,65"/>
+<area shape="rect" id="node2" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#a47894228f63f488c5212dd846621da72" title=" " alt="" coords="348,5,669,32"/>
+<area shape="rect" id="node4" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#ade81609e37ef5b096b7d351a7d116b83" title="A list of strings, where each element in the list is the name of a table in the main DB." alt="" coords="353,56,664,83"/>
+<area shape="rect" id="node3" href="$classsrc_1_1db__tools_1_1db__class__defs_1_1_d_b_base.html#a429bfd28d78ab3be7bfc8b3f24509fa1" title="Calling this property requires that we have made a previous call to self.__call__() in order to prope..." alt="" coords="717,5,1016,32"/>
 </map>

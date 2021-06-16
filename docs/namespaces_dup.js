@@ -1,6 +1,7 @@
 var namespaces_dup =
 [
     [ "setup", "namespacesetup.html", [
+      [ "Speach Act Theory", "md__r_e_a_d_m_e.html#autotoc_md10", null ],
       [ "author", "namespacesetup.html#a3a57a4772d418a06835249cbade0d86a", null ],
       [ "classifiers", "namespacesetup.html#abe96a9c38c1c61f9f0fdb002c482f785", null ],
       [ "description", "namespacesetup.html#aedf461ec52a946bda975938ba0b93ec0", null ],

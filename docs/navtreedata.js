@@ -26,20 +26,29 @@ var NAVTREE =
 [
   [ "ACME", "index.html", [
     [ "backlog", "md_backlog.html", null ],
-    [ "ACME: Automated Collection and Manipulation of Email", "md__r_e_a_d_m_e.html", [
-      [ "Conceptual elements for possible classification tools:", "md__r_e_a_d_m_e.html#autotoc_md1", null ]
+    [ "ACME", "md__r_e_a_d_m_e.html", [
+      [ "Automated Collection and Manipulation of Email", "md__r_e_a_d_m_e.html#autotoc_md0", null ],
+      [ "Prerequisites to using this application", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
+      [ "Accessing emails", "md__r_e_a_d_m_e.html#autotoc_md2", [
+        [ "For Gmail accounts", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
+        [ "For non-Gmail accounts", "md__r_e_a_d_m_e.html#autotoc_md4", null ]
+      ] ],
+      [ "Accessing cached data", "md__r_e_a_d_m_e.html#autotoc_md5", [
+        [ "Database details", "md__r_e_a_d_m_e.html#autotoc_md6", null ]
+      ] ],
+      [ "Installation instructions", "md__r_e_a_d_m_e.html#autotoc_md7", null ],
+      [ "Overview of application's executional flow", "md__r_e_a_d_m_e.html#autotoc_md8", null ],
+      [ "Conceptual elements for possible classification tools:", "md__r_e_a_d_m_e.html#autotoc_md9", null ]
     ] ],
     [ "Body Extraction sub-module (/src/body_extraction/)", "md_src_body_extraction__r_e_a_d_m_e.html", null ],
     [ "Database tools sub-module (/src/db_tools/)", "md_src_db_tools__r_e_a_d_m_e.html", null ],
     [ "Email Collection sub-module (src/email_caching/)", "md_src_email_caching__r_e_a_d_m_e.html", null ],
     [ "IMPORTANT NOTE:", "md_src_eralchemy__r_e_a_d_m_e.html", [
-      [ "Original source of this submodule:", "md_src_eralchemy__r_e_a_d_m_e.html#autotoc_md8", [
-        [ "Assumptions:", "md_src_body_extraction__r_e_a_d_m_e.html#autotoc_md4", [
-          [ "Speach Act Theory", "md__r_e_a_d_m_e.html#autotoc_md2", null ],
-          [ "Input:", "md_src_body_extraction__r_e_a_d_m_e.html#autotoc_md5", null ]
-        ] ],
-        [ "Explanation:", "md_src_eralchemy__r_e_a_d_m_e.html#autotoc_md9", null ],
-        [ "A list of changes made for use in this project:", "md_src_eralchemy__r_e_a_d_m_e.html#autotoc_md10", null ]
+      [ "Original source of this submodule:", "md_src_eralchemy__r_e_a_d_m_e.html#autotoc_md16", [
+        [ "Assumptions:", "md_src_body_extraction__r_e_a_d_m_e.html#autotoc_md12", null ],
+        [ "Assumptions:", "md_src_email_caching__r_e_a_d_m_e.html#autotoc_md15", null ],
+        [ "Explanation:", "md_src_eralchemy__r_e_a_d_m_e.html#autotoc_md17", null ],
+        [ "A list of changes made for use in this project:", "md_src_eralchemy__r_e_a_d_m_e.html#autotoc_md18", null ]
       ] ]
     ] ],
     [ "Lemma extraction sub-module (/src/lemma_extraction/)", "md_src_lemma_extraction__r_e_a_d_m_e.html", null ],
@@ -72,8 +81,8 @@ var NAVTREEINDEX =
 "____init_____8py.html",
 "classsrc_1_1email__caching_1_1cache__class__defs_1_1_email_d_b.html#a8149995711469aa297f60bca5c1667f1",
 "custom__logger_8py.html#acc086c09de5724a4aa34815e9af8d557",
-"namespacesrc_1_1body__extraction.html",
-"namespacesrc_1_1utils_1_1backup_1_1____main____.html#a6c0a3214f14710fc1d3514ebe9ef7da1"
+"namespacesetup.html#aedf461ec52a946bda975938ba0b93ec0",
+"namespacesrc_1_1utils_1_1backup.html#a997c3eb822627e0efb8f40f5ffd8ad0a"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

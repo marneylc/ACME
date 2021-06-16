@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ACME: ACME: Automated Collection and Manipulation of Email</title>
+<title>ACME: ACME</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,11 +84,89 @@ $(document).ready(function(){initNavTree('md__r_e_a_d_m_e.html',''); initResizab
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">ACME: Automated Collection and Manipulation of Email </div>  </div>
+<div class="title">ACME </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Create order where chaos reigns, your inbox ;)</p>
-<p>Isolated downloader demonstration steps:</p>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md0"></a>
+Automated Collection and Manipulation of Email</h1>
+<p><em>Create order where chaos reigns, your inbox ;)</em></p>
+<p><em><b>This readme is still in revision as of June 14, 2021... you've been warned</b></em></p>
+<p>This project aims to automate away the tediouse and technical details involved with:</p><ul>
+<li>Collecting email from your mail server &ndash; done using imap (Internet Access Message Protocol), protocol <a href="https://datatracker.ietf.org/doc/html/rfc822">RFC822</a></li>
+<li>Extracting the raw message text (or last message text if part of a thread) from the imap envlope structure</li>
+<li>Applying basic NLTK tools to the raw message text to produce lemmatized word-bags (a csr_matrix from the scikit-learn package)</li>
+</ul>
+<p>I also aim to present this project as a sort of open-topped toolkit. Meaning it should allow users to grab only the sub-modules they need in order do any one of the above listed tasks.</p>
+<p>Ultimately, code in this repository is meant to reduce the number of steps the user (you) need to toake before you can get to the more interesting work of creating a custom tool for automated message classification, or simply conducting a personal analysis on how you communicate with friends and colleagues. <br  />
+</p>
+<p>This project has become a sort of hobby project for me, so I will continue to hack at it until I feel it has matured to the point that:</p><ul>
+<li>A user can easily import this project from their own code and access only the tools they need</li>
+<li>There is a clear and thoroughly defined process for a community to extend the feature set of the project</li>
+<li>There is a clear and thoroughly defined process for guiding a user on how to supplement their own code in place of any sub-modules provided in this project.</li>
+</ul>
+<h3><a href="https://ryancpeters.github.io/ACME/">Project documentation</a> &ndash; generated using doxygen</h3>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Prerequisites to using this application</h1>
+<h1><a class="anchor" id="autotoc_md2"></a>
+Accessing emails</h1>
+<p>The default configuration of this application is to use python's builtin <code>imaplib</code> package to access email. This means that in order for you to use this application on your own email account, you need to configure it to allow application access other than your normal browser access.</p>
+<p>For the time being, I've only ever done this with a gmail account, though it should theoretically be portable accross all imap email hosts that support the imap protocol <a href="https://datatracker.ietf.org/doc/html/rfc822"><code>RFC822</code></a> (This should include most all modern email servers).</p>
+<h2><a class="anchor" id="autotoc_md3"></a>
+For Gmail accounts</h2>
+<p><em>As taken from google's help center, found here:</em> <a href="https://support.google.com/accounts/answer/185833">https://support.google.com/accounts/answer/185833</a></p>
+<h3>[Sign in with App Passwords]()</h3>
+<p><b>Tip:</b> App Passwords aren’t recommended and are unnecessary in most cases. To help keep your account secure, use "Sign in with Google" to connect apps to your Google Account.</p>
+<p>An App Password is a 16-digit passcode that gives a less secure app or device permission to access your Google Account. App Passwords can only be used with accounts that have 2-Step Verification turned on.</p>
+<h3>[When to use App Passwords]()</h3>
+<p><b>Tip:</b> iPhones and iPads with iOS 11 or up don’t require App Passwords. Instead use “Sign in with Google.”</p>
+<p>If the app doesn’t offer “Sign in with Google,” you can either:</p>
+<ul>
+<li>Use App Passwords</li>
+<li>Switch to a more secure app or device</li>
+</ul>
+<h3>Create &amp; use App Passwords</h3>
+<p>If you use <a href="https://support.google.com/accounts/answer/185839">2-Step-Verification</a> and get a "password incorrect" error when you sign in, you can try to use an App Password.</p><ul>
+<li>When initially creating this project, I had to use an App Password. A ToDo item for this project is to investigate the steps for registering a custom app for use with Google's gmail api.</li>
+</ul>
+<p>Go to your <a href="https://myaccount.google.com/">Google Account</a>.</p><ol type="1">
+<li>Select Security.</li>
+</ol>
+<ol type="1">
+<li>Under "Signing in to Google," select App Passwords. You may need to sign in. If you don’t have this option, it might be because:<ol type="a">
+<li>2-Step Verification is not set up for your account.</li>
+</ol>
+<ol type="a">
+<li>2-Step Verification is only set up for security keys.</li>
+</ol>
+<ol type="a">
+<li>Your account is through work, school, or other organization.</li>
+</ol>
+<ol type="a">
+<li>You turned on Advanced Protection.</li>
+</ol>
+</li>
+</ol>
+<ol type="1">
+<li>At the bottom, choose Select app and choose the app you using and then Select device and choose the device you’re using and then Generate.</li>
+</ol>
+<ol type="1">
+<li>Follow the instructions to enter the App Password. The App Password is the 16-character code in the yellow bar on your device.</li>
+</ol>
+<ol type="1">
+<li>Tap Done.</li>
+</ol>
+<p>Tip: Most of the time, you’ll only have to enter an App Password once per app or device, so don’t worry about memorizing it.</p>
+<h2><a class="anchor" id="autotoc_md4"></a>
+For non-Gmail accounts</h2>
+<p>ToDo: Experiment with non-gmail accounts and update this portion of the guide once a proper procedure is confirmed.</p>
+<h1><a class="anchor" id="autotoc_md5"></a>
+Accessing cached data</h1>
+<h2><a class="anchor" id="autotoc_md6"></a>
+Database details</h2>
+<p>We are using the python builtin package <code>sqlite3</code> to manage our databases where we cache persistent message and associated analysis data to disk.</p>
+<p>We are also maintaining 3 seperate databases over the course of the applications execution. We chose to do this in order to maintain a higher level of encapsulation between the major execution steps of the application. Thus ensuring the end user can easily treat this application as an adaptable toolkit that they can customize to their unique needs as they explore the data potentials of their email inbox.</p>
+<h1><a class="anchor" id="autotoc_md7"></a>
+Installation instructions</h1>
 <ol type="1">
 <li>install Anaconda's <code>Miniconda</code> console tool for minimalistic footprint virtual environment manager.<ul>
 <li>go to...<ul>
@@ -100,29 +178,28 @@ $(document).ready(function(){initNavTree('md__r_e_a_d_m_e.html',''); initResizab
 </li>
 <li>launch the resulting conda terminal (In windows this is a specific powershell/cmd terminal, this may vary on *nix systems)</li>
 <li>clone this repository to your local machine, then cd into that cloned directory.<ul>
-<li>the contents should look something like: <div class="fragment"><div class="line">|- EmailClassification</div>
-<div class="line">    |- Presentation_resources</div>
-<div class="line">        |- ignorable stuffs for now</div>
-<div class="line">    |- src</div>
+<li><code>git clone <a href="https://github.com/RyanCPeters/ACME.git">https://github.com/RyanCPeters/ACME.git</a></code></li>
+<li><code>cd ACME</code></li>
+<li>the contents of the directory should look something like: <div class="fragment"><div class="line">|- ACME/</div>
+<div class="line">    |- src/</div>
 <div class="line">        |- code files and stuff...</div>
 <div class="line">    |- .gitignore</div>
-<div class="line">    |- downloader_environment.yml   # this environment file gives minimal footprint for downloading and caching emails.</div>
-<div class="line">    |- environment.yml              # this environment file is for full classification pipeline</div>
+<div class="line">    |- environment.yml</div>
 <div class="line">    |- README.md</div>
 <div class="line">    |- setup.py</div>
 </div><!-- fragment --></li>
 </ul>
 </li>
 <li>use conda to set up and activate your virtual environment.<ul>
-<li><code>conda env create -f ./downloader_environment.yml</code></li>
-<li><code>conda activate email_downlaoder_env</code><ul>
+<li><code>conda env create -f ./environment.yml</code></li>
+<li><code>conda activate acme_env</code><ul>
 <li>optionally, you may inspect the packages available in the environment as follows:<ul>
 <li><code>conda env export</code><ul>
 <li>gives a verbose listing of packages and their versions</li>
 </ul>
 </li>
 <li>or you can call <code>conda env export --from-history</code><ul>
-<li>This will tell you explicitly what the <code>downloader_environment.yml</code> file required.</li>
+<li>This will tell you explicitly what the <code>environment.yml</code> file required.</li>
 </ul>
 </li>
 </ul>
@@ -132,12 +209,12 @@ $(document).ready(function(){initNavTree('md__r_e_a_d_m_e.html',''); initResizab
 </ul>
 </li>
 <li>Sanity check:<ul>
-<li>You should be in a conda activated terminal, inside of the <code>email_downlaoder_env</code> virtual environment.</li>
-<li>You should also be in the <code>EmailClassification</code> folder, which is the root of the project,</li>
-<li>The <code><a class="el" href="setup_8py.html">setup.py</a></code> file should also be in the <code>EmailClassification</code> folder.</li>
+<li>You should be in a conda activated terminal, with the active environment being our <code>acme_env</code> virtual environment.</li>
+<li>You should also be in the <code>ACME</code> folder, which is the root of the project,</li>
+<li>The <code><a class="el" href="setup_8py.html">setup.py</a></code> file should also be in the <code>ACME</code> folder.</li>
 </ul>
 </li>
-<li>Now we have <code>pip</code> use the <code><a class="el" href="setup_8py.html">setup.py</a></code> file to modify the environment.<ul>
+<li>Now we use <code>pip</code> to execute the <code><a class="el" href="setup_8py.html">setup.py</a></code> file which creates a terminal entry-point for the application.<ul>
 <li><code>python -m pip install -e .</code><ul>
 <li>tells python to run pip install with the <code>-e</code> flag that signals to use a local <code><a class="el" href="setup_8py.html">setup.py</a></code> file.</li>
 <li>we pass <code>.</code> to say that the <code><a class="el" href="setup_8py.html">setup.py</a></code> file is located in the current working directory.</li>
@@ -145,28 +222,50 @@ $(document).ready(function(){initNavTree('md__r_e_a_d_m_e.html',''); initResizab
 </li>
 <li>This will result in the creation of console entry-points to the program for easy command line interactions.</li>
 <li>output should look something like this: <div class="fragment"><div class="line">$ python -m pip install -e .</div>
-<div class="line">Obtaining file:///D:/GitHub_Remotes/shcool/EmailClassification</div>
-<div class="line">Installing collected packages: EmailClassification</div>
-<div class="line">  Running setup.py develop for EmailClassification</div>
-<div class="line">Successfully installed EmailClassification</div>
+<div class="line">Obtaining file:///D:/GitHub_Remotes/shcool/ACME</div>
+<div class="line">Installing collected packages: ACME</div>
+<div class="line">  Running setup.py develop for ACME</div>
+<div class="line">Successfully installed ACME</div>
 </div><!-- fragment --></li>
 </ul>
 </li>
-<li>We can now call the downloader command line entry point <code>email_download</code> to get the default implementation of the downlaoder.<ul>
-<li>The default implementation will download from the hard-coded email server, targeting the hard-coded account and password, and will cache the downloaded emails in the <code>*/EmailClassification/cache_files/</code> folder,</li>
-<li>Alternatively, you can call <code>email_download /path/to/your/desired/cache/point</code><ul>
-<li>This custom cache directory will be created should it not already exist.</li>
+<li><strike>We can now call the downloader command line entry point <code>collect_email</code> to get the default implementation of the downlaoder.</strike><ul>
+<li><strike>The default implementation will download from the hard-coded email server, targeting the hard-coded account and password, and will cache the downloaded emails in the <code>*/EmailClassification/cache_files/</code> folder,</strike></li>
+<li><strike>Alternatively, you can call <code>collect_email /path/to/your/desired/cache/point</code></strike><ul>
+<li><strike>This custom cache directory will be created should it not already exist.</strike></li>
 </ul>
 </li>
 </ul>
 </li>
 </ol>
-<p>If you would like to manually inspect the entire list of entry points the <code><a class="el" href="setup_8py.html">setup.py</a></code> file created, see the keyword <code>entry_points</code> at the bottom of the <code><a class="el" href="setup_8py.html">setup.py</a></code> file.</p><ul>
-<li>This list is subject to change over time as further entry points are added.</li>
+<p><strike>If you would like to manually inspect the entire list of entry points the <code><a class="el" href="setup_8py.html">setup.py</a></code> file created, see the keyword <code>entry_points</code> at the bottom of the <code><a class="el" href="setup_8py.html">setup.py</a></code> file.</strike></p><ul>
+<li><strike>This list is subject to change over time as further entry points are added.</strike></li>
 </ul>
-<h1><a class="anchor" id="autotoc_md1"></a>
+<h1><a class="anchor" id="autotoc_md8"></a>
+Overview of application's executional flow</h1>
+<p>The application's execution flow consists of three phases:</p><ol type="1">
+<li>Email collection<ul>
+<li>Open/create email caching database on disk named <code>sql3_email.db</code> <br  />
+</li>
+<li>Download email header and generate unique message id</li>
+<li>If id not in DB, download full message envelope (imap defined message structure) and cache add it to DB under derived id.</li>
+</ul>
+</li>
+<li>Message body parsing and extraction<ul>
+<li>Open/create email caching database on disk named <code>sql3_message_body.db</code> <br  />
+</li>
+<li>Open connection to <code>sql3_email.db</code></li>
+<li>Load imap envelope from email db then decompose it into header, message text, and possible associated message thread members</li>
+<li>The character set (encoding) of a given message can vary with the senders email service, so we convert all messages to be UTF-8.<ul>
+<li>In doing this we make sure to handle the more common problem characters not naturally covered by the UTF-8 encoding. (\u2014, \u2018, \u2019, and \ufeff)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md9"></a>
 Conceptual elements for possible classification tools:</h1>
-<h3><a class="anchor" id="autotoc_md2"></a>
+<h3><a class="anchor" id="autotoc_md10"></a>
 Speach Act Theory</h3>
 <p>The following excerpts were extracted from <a href="./references/Classifying_Action_Items_for_Semantic_Email.pdf">Classifying Action Items for Semantic Email</a></p>
 <blockquote class="doxtable">

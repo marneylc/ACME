@@ -152,7 +152,7 @@ The following excerpts were extracted from [Classifying Action Items for Semanti
 >
 > Actions consist of Request – an action requiring a reply from the recipient (e.g. a question); Assign – an action requiring an activity but no reply (e.g. an order or a commitment); Suggest – an action involving an optional activity; and Deliver – the action of delivering data. Objects are categorised into Activities (Task and Event) and Data (Information and Resource). The subject parameter is only applicable to activities (being the task performer(s) or the event participant(s) – i.e. Sender, Recipient, Both). Thus, a request for permission to attend an event is represented as a (Request, Event, Sender), an order to perform a joint task as an (Assign, Task, Both), and a request for information can be represented as a (Request, Information, Ø). The basic 22 combinations of these parameters (i.e. the email action items) together with a brief description are shown in Fig. 1.
 >
-> ![Example Diagram](./presentaion_resources/Speach_Act_Theory_structure.png "Figure 1: The 22 action item instances for the classification task, with a short description")
+> ![Example Diagram](./readme_support_images/Speach_Act_Theory_structure.png "Figure 1: The 22 action item instances for the classification task, with a short description")
 > <figcaption>Figure 1: The 22 action item instances for the classification task, with a short description</figcaption>
 
 

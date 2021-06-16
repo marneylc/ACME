@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['acme_3a_20automated_20collection_20and_20manipulation_20of_20email_71',['ACME: Automated Collection and Manipulation of Email',['../md__r_e_a_d_m_e.html',1,'']]],
+  ['acme_71',['ACME',['../md__r_e_a_d_m_e.html',1,'']]],
   ['action_72',['action',['../classsrc_1_1lemma__extraction_1_1word__extraction__classes_1_1_sentence_word_tagger.html#a33475afc56f23f91667870f7d1ba9cb0',1,'src::lemma_extraction::word_extraction_classes::SentenceWordTagger']]],
   ['adapt_5fcomplex_5fjson_73',['adapt_complex_json',['../namespacesrc_1_1utils_1_1____main____.html#a673de6692a4526f9771b5d8103393634',1,'src.utils.__main__.adapt_complex_json()'],['../namespacesrc_1_1utils_1_1backup_1_1____main____.html#a766fa417fc52f406afaff153cea636c0',1,'src.utils.backup.__main__.adapt_complex_json()']]],
   ['adapt_5fsimple_5fjson_74',['adapt_simple_json',['../namespacesrc_1_1utils_1_1____main____.html#af3443ad8f19eeee444a8817938451085',1,'src.utils.__main__.adapt_simple_json()'],['../namespacesrc_1_1utils_1_1backup_1_1____main____.html#a6c0a3214f14710fc1d3514ebe9ef7da1',1,'src.utils.backup.__main__.adapt_simple_json()']]],

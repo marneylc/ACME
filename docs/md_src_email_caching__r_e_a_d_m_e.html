@@ -87,7 +87,21 @@ $(document).ready(function(){initNavTree('md_src_email_caching__r_e_a_d_m_e.html
 <div class="title">Email Collection sub-module (src/email_caching/) </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><p>This module is responsible for creating a secure connection to an imap email sever, targ.</p>
+<h2><a class="anchor" id="autotoc_md15"></a>
+Assumptions:</h2>
+<p>This module makes the following assumptions regarding the state of its inputs and the requirements for its output.</p>
+<h3>Input:</h3>
+<ol type="1">
+<li>The <code>imap</code> envelope structure is cached to disk on a SQLite database.<ul>
+<li>The path to this database can be found in the DB_PATH_DICT (a global variable defined in ..utils.__init__.py) under the key &lsquo;'emails&rsquo;`</li>
+</ul>
+</li>
+<li>The</li>
+</ol>
+<p>The module requires that there exists a SQLite database with a path defined in the DB_PATH_DICT under the key <code>body_cache</code> (or simply <code>body</code>) that contains the table <code>message_body</code>.</p>
+<p>The <code>message_body</code> table must include the column <code>processed_body</code> which we will use as our data source for each email message. </p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->
