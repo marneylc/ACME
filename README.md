@@ -31,12 +31,12 @@ For the time being, I've only ever done this with a gmail account, though it sho
 ### For Gmail accounts
 *As taken from google's help center, found here:* https://support.google.com/accounts/answer/185833
 
-#### [Sign in with App Passwords]
+#### Sign in with App Passwords
 **Tip:** App Passwords aren’t recommended and are unnecessary in most cases. To help keep your account secure, use "Sign in with Google" to connect apps to your Google Account. 
 
 An App Password is a 16-digit passcode that gives a less secure app or device permission to access your Google Account. App Passwords can only be used with accounts that have 2-Step Verification turned on.
 
-#### [When to use App Passwords]
+#### When to use App Passwords
 **Tip:** iPhones and iPads with iOS 11 or up don’t require App Passwords. Instead use “Sign in with Google.”
 
 If the app doesn’t offer “Sign in with Google,” you can either:
